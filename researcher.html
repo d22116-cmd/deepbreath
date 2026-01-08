@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Researcher Dashboard</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        .dashboard-header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .stat-label {
+            color: #666;
+            margin-top: 10px;
+        }
+        .content-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+        .btn-secondary {
+            background: #48bb78;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background: #38a169;
+        }
+        .info-box {
+            background: #e6f3ff;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        .feature-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .feature-list li:before {
+            content: "✅ ";
+            color: #48bb78;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="dashboard-header">
+            <h1>📊 Researcher Dashboard</h1>
+            <p style="color: #666; margin-top: 10px;">Slow Breathing Research Platform - Data Analysis & Participant Management</p>
+            <div style="margin-top: 20px;">
+                <button class="btn btn-secondary" onclick="window.location.href='index.html'">← Back to Home</button>
+                <button class="btn btn-primary" onclick="alert('Full dashboard functionality coming soon!')">➕ Create Protocol</button>
+                <button class="btn btn-primary" onclick="alert('Full dashboard functionality coming soon!')">👤 Add Participant</button>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">0</div>
+                <div class="stat-label">Total Participants</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">0</div>
+                <div class="stat-label">Active Sessions</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">0</div>
+                <div class="stat-label">Completed Sessions</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">--</div>
+                <div class="stat-label">Average Compliance</div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2 style="color: #667eea; margin-bottom: 15px;">🎯 Research Features</h2>
+            
+            <ul class="feature-list">
+                <li><strong>Real-time Monitoring:</strong> Track multiple participants simultaneously</li>
+                <li><strong>Protocol Management:</strong> Create and assign custom breathing protocols</li>
+                <li><strong>Data Export:</strong> Export session data in CSV/JSON format for analysis</li>
+                <li><strong>HRV Analysis:</strong> Automated calculation of RMSSD, SDNN, LF/HF ratios</li>
+                <li><strong>Compliance Tracking:</strong> Monitor adherence to 6 bpm target</li>
+                <li><strong>Hardware Integration:</strong> Support for PranaFlow and Prana Shirt devices</li>
+                <li><strong>GDPR Compliant:</strong> All data stored locally, complete privacy control</li>
+            </ul>
+
+            <div class="info-box">
+                <h3 style="color: #667eea; margin-bottom: 10px;">📖 Getting Started</h3>
+                <p><strong>This is a demonstration version.</strong> The full researcher dashboard includes:</p>
+                <ul style="margin-top: 10px;">
+                    <li>Multi-participant session monitoring</li>
+                    <li>Real-time data visualization with Chart.js</li>
+                    <li>Customizable research protocols</li>
+                    <li>Statistical analysis tools</li>
+                    <li>Batch data export for multiple sessions</li>
+                </ul>
+                <p style="margin-top: 15px;">
+                    <strong>For full implementation:</strong> Contact <a href="mailto:satyamtiwaript@gmail.com">satyamtiwaript@gmail.com</a>
+                </p>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2 style="color: #667eea; margin-bottom: 15px;">🔬 Supported Research Protocols</h2>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 20px;">
+                <div style="border: 2px solid #667eea; border-radius: 10px; padding: 20px;">
+                    <h3 style="color: #667eea;">Acute Effects Study</h3>
+                    <p>Measure immediate physiological changes during 10-minute slow breathing intervention.</p>
+                    <p style="margin-top: 10px; font-size: 0.9em; color: #666;">
+                        <strong>Measures:</strong> HRV, breath rate compliance, autonomic balance
+                    </p>
+                </div>
+
+                <div style="border: 2px solid #48bb78; border-radius: 10px; padding: 20px;">
+                    <h3 style="color: #48bb78;">Transfer Effects Study</h3>
+                    <p>Assess long-term changes from daily practice over 4 weeks.</p>
+                    <p style="margin-top: 10px; font-size: 0.9em; color: #666;">
+                        <strong>Measures:</strong> Resting HRV trends, stress recovery capacity
+                    </p>
+                </div>
+
+                <div style="border: 2px solid #f093fb; border-radius: 10px; padding: 20px;">
+                    <h3 style="color: #764ba2;">Nostril-Specific Study</h3>
+                    <p>Investigate differential effects of nostril dominance with PranaFlow device.</p>
+                    <p style="margin-top: 10px; font-size: 0.9em; color: #666;">
+                        <strong>Measures:</strong> Laterality index, cardiovascular effects
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2 style="color: #667eea; margin-bottom: 15px;">📚 Documentation</h2>
+            <p>For detailed research protocols and API documentation:</p>
+            <ul style="margin-top: 15px;">
+                <li><a href="docs/DEPLOYMENT.md" style="color: #667eea;">Deployment Guide</a></li>
+                <li><a href="docs/API.md" style="color: #667eea;">Hardware Integration API</a></li>
+                <li><a href="https://github.com/yourusername/slow-breathing-platform" style="color: #667eea;">GitHub Repository</a></li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
