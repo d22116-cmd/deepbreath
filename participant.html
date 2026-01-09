@@ -3,142 +3,157 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Breathing Session - YogaXBiofeedback</title>
+    <title>Real Biometric Detection - YogaXBiofeedback</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
-            background: #f5f5f7;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+            background: #000;
+            color: #fff;
             min-height: 100vh;
         }
-        
-        /* Header */
         .header {
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(26, 26, 26, 0.95);
             backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
             padding: 20px 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
         }
-        
-        .participant-info {
+        .logo { font-size: 1.5em; font-weight: 700; }
+        .status-bar {
             display: flex;
-            align-items: center;
             gap: 20px;
+            align-items: center;
         }
-        
-        .participant-badge {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.9em;
-            font-weight: 600;
-        }
-        
-        .session-status {
+        .status-item {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
+            font-size: 0.9em;
         }
-        
         .status-dot {
-            width: 10px;
-            height: 10px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
-            background: #34d399;
-            animation: pulse 2s infinite;
+            background: #666;
         }
+        .status-dot.active { background: #34d399; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
         
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-        
-        /* Main Layout */
-        .main-container {
-            max-width: 1400px;
-            margin: 30px auto;
-            padding: 0 30px;
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 30px;
             display: grid;
             grid-template-columns: 1.5fr 1fr;
             gap: 30px;
         }
         
-        /* Card Style */
         .card {
-            background: white;
+            background: rgba(26, 26, 26, 0.95);
             border-radius: 24px;
-            padding: 40px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         
-        /* Breathing Circle */
-        .pacer-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 500px;
-        }
-        
-        .breath-circle {
-            width: 280px;
-            height: 280px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 20px 60px rgba(102, 126, 234, 0.3);
+        .video-section {
             position: relative;
         }
-        
-        .breath-text {
-            font-size: 2.5em;
-            font-weight: 600;
-            color: white;
-            text-align: center;
+        #videoFeed {
+            width: 100%;
+            border-radius: 16px;
+            background: #000;
         }
-        
-        .progress-ring {
+        #canvas {
             position: absolute;
-            top: -15px;
-            left: -15px;
-            width: 310px;
-            height: 310px;
+            top: 0;
+            left: 0;
+            border-radius: 16px;
         }
         
-        .progress-ring circle {
-            fill: none;
-            stroke: #34d399;
-            stroke-width: 6;
-            stroke-dasharray: 974;
-            stroke-dashoffset: 0;
-            transform-origin: center;
-            transform: rotate(-90deg);
+        .detection-overlay {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 15px;
+            border-radius: 12px;
         }
         
-        /* Controls */
+        .detection-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        .detection-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px;
+            border-radius: 8px;
+        }
+        
+        .detection-label {
+            font-size: 0.85em;
+            color: #888;
+            margin-bottom: 5px;
+        }
+        
+        .detection-value {
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            gap: 20px;
+        }
+        
+        .metric-card {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 25px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .metric-label {
+            font-size: 0.9em;
+            color: #888;
+            margin-bottom: 10px;
+        }
+        
+        .metric-value {
+            font-size: 3em;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .metric-unit {
+            font-size: 0.4em;
+            color: #666;
+        }
+        
+        .metric-info {
+            margin-top: 10px;
+            font-size: 0.85em;
+            color: #666;
+        }
+        
         .controls {
-            margin-top: 40px;
             display: flex;
             gap: 15px;
+            margin-top: 30px;
         }
         
         .btn {
-            padding: 16px 32px;
+            flex: 1;
+            padding: 16px;
             border: none;
             border-radius: 12px;
             font-size: 1em;
@@ -148,9 +163,8 @@
         }
         
         .btn-start {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
-            flex: 1;
         }
         
         .btn-start:hover {
@@ -159,151 +173,50 @@
         }
         
         .btn-stop {
-            background: #ff3b30;
+            background: #ef4444;
             color: white;
-            flex: 1;
         }
         
         .btn-stop:hover {
-            background: #ff2d20;
+            background: #dc2626;
         }
         
         .btn:disabled {
-            opacity: 0.4;
+            opacity: 0.5;
             cursor: not-allowed;
         }
         
-        /* Metrics */
-        .metrics-grid {
-            display: grid;
-            gap: 20px;
-        }
-        
-        .metric-card {
-            background: #f5f5f7;
-            padding: 24px;
-            border-radius: 16px;
-        }
-        
-        .metric-label {
-            font-size: 0.9em;
-            color: #666;
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
-        
-        .metric-value {
-            font-size: 2.5em;
-            font-weight: 700;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .metric-unit {
-            font-size: 0.5em;
-            color: #999;
-        }
-        
-        /* Video Feed */
-        .video-container {
-            margin-top: 20px;
-            border-radius: 16px;
-            overflow: hidden;
-            position: relative;
-            display: none;
-            background: #000;
-        }
-        
-        .video-feed {
-            width: 100%;
-            display: block;
-        }
-        
-        .video-badge {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(10px);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.85em;
-            font-weight: 500;
-        }
-        
-        /* Chart */
-        .chart-container {
-            margin-top: 20px;
-            height: 200px;
-            background: #f5f5f7;
-            border-radius: 16px;
+        .info-box {
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.3);
             padding: 20px;
-        }
-        
-        /* Session Info */
-        .session-info {
-            text-align: center;
-            margin-top: 30px;
-            padding-top: 30px;
-            border-top: 1px solid #e5e5e7;
-        }
-        
-        .session-info-item {
-            display: inline-block;
-            margin: 0 20px;
-        }
-        
-        .session-info-label {
+            border-radius: 12px;
+            margin-top: 20px;
             font-size: 0.9em;
-            color: #666;
+            line-height: 1.6;
         }
         
-        .session-info-value {
-            font-size: 1.5em;
-            font-weight: 700;
-            color: #000;
-            display: block;
-            margin-top: 5px;
+        .signal-display {
+            margin-top: 20px;
+            height: 150px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
         }
         
-        /* Export Section */
-        .export-section {
-            margin-top: 30px;
+        #signalCanvas {
+            width: 100%;
+            height: 100%;
         }
         
-        .export-title {
-            font-size: 1.2em;
-            font-weight: 600;
-            margin-bottom: 15px;
+        .chart-container {
+            height: 200px;
+            margin-top: 20px;
         }
         
-        .export-buttons {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-        }
-        
-        .btn-export {
-            padding: 12px;
-            background: #f5f5f7;
-            border: 1px solid #e5e5e7;
-            border-radius: 10px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .btn-export:hover {
-            background: #fff;
-            border-color: #667eea;
-            color: #667eea;
-        }
-        
-        @media (max-width: 1024px) {
-            .main-container {
+        @media (max-width: 1200px) {
+            .container {
                 grid-template-columns: 1fr;
             }
         }
@@ -311,60 +224,75 @@
 </head>
 <body>
     <header class="header">
-        <div class="participant-info">
-            <div style="font-size: 1.5em;">🫁</div>
-            <div>
-                <div class="participant-badge" id="participantBadge">P001</div>
-                <div style="font-size: 0.85em; color: #666; margin-top: 5px;" id="protocolName">Loading...</div>
+        <div class="logo">🫁 YogaXBiofeedback</div>
+        <div class="status-bar">
+            <div class="status-item">
+                <div class="status-dot" id="faceStatusDot"></div>
+                <span>Face: <span id="faceStatus">Offline</span></span>
             </div>
-        </div>
-        
-        <div class="session-status">
-            <div class="status-dot" id="statusDot"></div>
-            <span id="statusText" style="font-weight: 500;">Ready</span>
+            <div class="status-item">
+                <div class="status-dot" id="poseStatusDot"></div>
+                <span>Pose: <span id="poseStatus">Offline</span></span>
+            </div>
+            <div class="status-item">
+                <div class="status-dot" id="signalStatusDot"></div>
+                <span>Signal: <span id="signalStatus">Offline</span></span>
+            </div>
         </div>
     </header>
     
-    <div class="main-container">
-        <!-- Left Column: Breathing Pacer -->
-        <div class="card pacer-container">
-            <div style="position: relative;">
-                <svg class="progress-ring">
-                    <circle id="progressCircle" cx="155" cy="155" r="155"/>
-                </svg>
-                <div class="breath-circle" id="breathCircle">
-                    <div class="breath-text" id="breathText">Ready</div>
+    <div class="container">
+        <div>
+            <div class="card video-section">
+                <video id="videoFeed" autoplay playsinline></video>
+                <canvas id="canvas"></canvas>
+                
+                <div class="detection-overlay">
+                    <div style="font-weight: 600; margin-bottom: 10px;">Detection Status</div>
+                    <div class="detection-grid">
+                        <div class="detection-item">
+                            <div class="detection-label">Faces Detected</div>
+                            <div class="detection-value" id="faceCount">0</div>
+                        </div>
+                        <div class="detection-item">
+                            <div class="detection-label">Pose Detected</div>
+                            <div class="detection-value" id="poseDetected">No</div>
+                        </div>
+                        <div class="detection-item">
+                            <div class="detection-label">Signal Quality</div>
+                            <div class="detection-value" id="signalQuality">--</div>
+                        </div>
+                        <div class="detection-item">
+                            <div class="detection-label">Frame Rate</div>
+                            <div class="detection-value" id="fps">0</div>
+                        </div>
+                    </div>
                 </div>
             </div>
             
             <div class="controls">
-                <button class="btn btn-start" id="startBtn" onclick="startSession()">Start Session</button>
-                <button class="btn btn-stop" id="stopBtn" onclick="stopSession()" disabled>Stop</button>
+                <button class="btn btn-start" id="startBtn" onclick="startDetection()">Start Real Detection</button>
+                <button class="btn btn-stop" id="stopBtn" onclick="stopDetection()" disabled>Stop</button>
             </div>
             
-            <div class="session-info">
-                <div class="session-info-item">
-                    <span class="session-info-label">Duration</span>
-                    <span class="session-info-value" id="sessionTime">0:00</span>
-                </div>
-                <div class="session-info-item">
-                    <span class="session-info-label">Breaths</span>
-                    <span class="session-info-value" id="breathCount">0</span>
-                </div>
+            <div class="info-box" id="infoBox">
+                <strong>ℹ️ System Status:</strong> Click "Start Real Detection" to initialize MediaPipe models and begin real-time biometric measurement.
             </div>
         </div>
         
-        <!-- Right Column: Metrics -->
         <div>
             <div class="card">
-                <h3 style="margin-bottom: 20px; font-size: 1.3em;">Live Metrics</h3>
+                <h3 style="margin-bottom: 20px;">Live Biometrics</h3>
                 
                 <div class="metrics-grid">
                     <div class="metric-card">
-                        <div class="metric-label">Heart Rate Variability</div>
+                        <div class="metric-label">Heart Rate Variability (RMSSD)</div>
                         <div class="metric-value">
                             <span id="hrvValue">--</span>
                             <span class="metric-unit">ms</span>
+                        </div>
+                        <div class="metric-info">
+                            Confidence: <span id="hrvConfidence">--</span>
                         </div>
                     </div>
                     
@@ -374,288 +302,685 @@
                             <span id="hrValue">--</span>
                             <span class="metric-unit">bpm</span>
                         </div>
+                        <div class="metric-info">
+                            From rPPG signal
+                        </div>
                     </div>
                     
                     <div class="metric-card">
-                        <div class="metric-label">Breath Rate</div>
+                        <div class="metric-label">Respiratory Rate</div>
                         <div class="metric-value">
-                            <span id="breathRateValue">--</span>
+                            <span id="rrValue">--</span>
                             <span class="metric-unit">bpm</span>
                         </div>
-                        <div style="margin-top: 10px; font-size: 0.85em; color: #666;" id="complianceStatus">
-                            Target: 6.0 bpm
+                        <div class="metric-info">
+                            From chest movement
                         </div>
                     </div>
                 </div>
                 
-                <div class="video-container" id="videoContainer">
-                    <video id="videoFeed" class="video-feed" autoplay playsinline muted></video>
-                    <div class="video-badge">📹 Camera Active</div>
+                <div class="signal-display">
+                    <canvas id="signalCanvas"></canvas>
                 </div>
                 
                 <div class="chart-container">
                     <canvas id="hrvChart"></canvas>
                 </div>
             </div>
-            
-            <div class="card export-section">
-                <div class="export-title">Export Data</div>
-                <div class="export-buttons">
-                    <button class="btn-export" onclick="exportCSV()">💾 CSV</button>
-                    <button class="btn-export" onclick="exportJSON()">📄 JSON</button>
-                    <button class="btn-export" onclick="resetSession()">🔄 Reset</button>
-                </div>
-                <div style="margin-top: 15px; font-size: 0.9em; color: #666;">
-                    Data points: <span id="dataCount" style="font-weight: 600;">0</span>
-                </div>
-            </div>
         </div>
     </div>
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <script>
-        // Load participant info
-        const participantData = JSON.parse(localStorage.getItem('currentParticipant') || '{}');
-        if (participantData.participantId) {
-            document.getElementById('participantBadge').textContent = participantData.participantId;
-            
-            const protocolNames = {
-                'acute': 'Acute Effects Study',
-                'transfer': 'Transfer Effects Study',
-                'comparative': 'Comparative Study',
-                'nostril': 'Nostril-Specific Study'
-            };
-            document.getElementById('protocolName').textContent = 
-                protocolNames[participantData.protocol] || 'Standard Protocol';
-        }
+    <script type="module">
+        import { FaceLandmarker, PoseLandmarker, FilesetResolver } from 
+            "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14";
         
-        // Session state
+        // ========== GLOBAL STATE ==========
+        let faceLandmarker = null;
+        let poseLandmarker = null;
         let isRunning = false;
-        let breathCount = 0;
-        let sessionStartTime = null;
-        let sessionData = [];
-        let hrvChart = null;
         let videoStream = null;
+        let animationId = null;
         
-        const breathCycle = 10000;
-        const inhaleRatio = 0.4;
-        const holdRatio = 0.1;
-        const exhaleRatio = 0.5;
+        // Signal processing buffers
+        let greenChannelBuffer = [];
+        let shoulderBuffer = [];
+        let rrIntervals = [];
+        let timestamps = [];
         
-        // Initialize chart
-        const ctx = document.getElementById('hrvChart').getContext('2d');
-        hrvChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: [],
-                datasets: [{
-                    label: 'HRV',
-                    data: [],
-                    borderColor: '#667eea',
-                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
-                    tension: 0.4,
-                    fill: true,
-                    borderWidth: 2
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: { display: false },
-                    x: { display: false }
-                }
-            }
-        });
+        const BUFFER_SIZE = 300; // 10 seconds at 30fps
+        const MIN_SIGNAL_LENGTH = 90; // 3 seconds minimum
         
-        async function startSession() {
+        // Chart
+        let hrvChart = null;
+        
+        // FPS counter
+        let lastFrameTime = Date.now();
+        let frameCount = 0;
+        
+        // ========== INITIALIZATION ==========
+        async function initializeMediaPipe() {
             try {
-                videoStream = await navigator.mediaDevices.getUserMedia({ video: true });
-                document.getElementById('videoFeed').srcObject = videoStream;
-                document.getElementById('videoContainer').style.display = 'block';
+                updateInfoBox('Loading MediaPipe models...', 'loading');
                 
-                isRunning = true;
-                sessionStartTime = Date.now();
-                breathCount = 0;
+                const vision = await FilesetResolver.forVisionTasks(
+                    "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm"
+                );
                 
-                document.getElementById('startBtn').disabled = true;
-                document.getElementById('stopBtn').disabled = false;
-                document.getElementById('statusText').textContent = 'Active';
+                // Initialize Face Landmarker
+                faceLandmarker = await FaceLandmarker.createFromOptions(vision, {
+                    baseOptions: {
+                        modelAssetPath: "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task",
+                        delegate: "GPU"
+                    },
+                    runningMode: "VIDEO",
+                    numFaces: 1,
+                    minFaceDetectionConfidence: 0.5,
+                    minFacePresenceConfidence: 0.5,
+                    minTrackingConfidence: 0.5
+                });
                 
-                animate();
-                updateSessionTime();
-                startDataCollection();
+                console.log('✅ Face Landmarker loaded');
+                
+                // Initialize Pose Landmarker
+                poseLandmarker = await PoseLandmarker.createFromOptions(vision, {
+                    baseOptions: {
+                        modelAssetPath: "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task",
+                        delegate: "GPU"
+                    },
+                    runningMode: "VIDEO",
+                    numPoses: 1,
+                    minPoseDetectionConfidence: 0.5,
+                    minPosePresenceConfidence: 0.5,
+                    minTrackingConfidence: 0.5
+                });
+                
+                console.log('✅ Pose Landmarker loaded');
+                
+                updateInfoBox('✅ MediaPipe models loaded successfully!', 'success');
+                return true;
                 
             } catch (error) {
-                alert('Camera access required. Please grant permission.');
+                console.error('❌ MediaPipe initialization failed:', error);
+                updateInfoBox(`❌ Failed to load models: ${error.message}`, 'error');
+                return false;
             }
         }
         
-        function stopSession() {
+        // ========== START/STOP DETECTION ==========
+        window.startDetection = async function() {
+            // Initialize MediaPipe if needed
+            if (!faceLandmarker || !poseLandmarker) {
+                const success = await initializeMediaPipe();
+                if (!success) return;
+            }
+            
+            try {
+                // Request camera
+                videoStream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 },
+                        facingMode: 'user'
+                    }
+                });
+                
+                const video = document.getElementById('videoFeed');
+                video.srcObject = videoStream;
+                
+                await video.play();
+                
+                // Setup canvas
+                const canvas = document.getElementById('canvas');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                
+                // Initialize chart
+                initChart();
+                
+                // Start processing
+                isRunning = true;
+                document.getElementById('startBtn').disabled = true;
+                document.getElementById('stopBtn').disabled = false;
+                
+                updateInfoBox('✅ Detection active - Processing frames...', 'success');
+                
+                processFrame();
+                
+            } catch (error) {
+                console.error('❌ Camera access failed:', error);
+                alert('Camera access required. Please grant permission and try again.');
+            }
+        };
+        
+        window.stopDetection = function() {
             isRunning = false;
+            
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+            }
             
             if (videoStream) {
                 videoStream.getTracks().forEach(track => track.stop());
-                document.getElementById('videoContainer').style.display = 'none';
             }
             
             document.getElementById('startBtn').disabled = false;
             document.getElementById('stopBtn').disabled = true;
-            document.getElementById('statusText').textContent = 'Stopped';
             
-            const circle = document.getElementById('breathCircle');
-            circle.style.transform = 'scale(1)';
-            document.getElementById('breathText').textContent = 'Complete';
-        }
+            updateStatus('faceStatus', 'Offline', false);
+            updateStatus('poseStatus', 'Offline', false);
+            updateStatus('signalStatus', 'Offline', false);
+            
+            updateInfoBox('🛑 Detection stopped', 'info');
+        };
         
-        let animationFrame = null;
-        let startTime = Date.now();
-        
-        function animate() {
+        // ========== FRAME PROCESSING ==========
+        async function processFrame() {
             if (!isRunning) return;
             
-            const elapsed = (Date.now() - startTime) % breathCycle;
-            const progress = elapsed / breathCycle;
+            const video = document.getElementById('videoFeed');
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
             
-            const inhaleTime = breathCycle * inhaleRatio;
-            const holdTime = breathCycle * holdRatio;
+            const now = performance.now();
             
-            let phase, text, scale;
-            
-            if (elapsed < inhaleTime) {
-                phase = 'inhale';
-                scale = 1 + (elapsed / inhaleTime) * 0.6;
-                text = 'Breathe In';
-            } else if (elapsed < inhaleTime + holdTime) {
-                scale = 1.6;
-                text = 'Hold';
-            } else {
-                const exhaleProgress = (elapsed - inhaleTime - holdTime) / (breathCycle - inhaleTime - holdTime);
-                scale = 1.6 - exhaleProgress * 0.6;
-                text = 'Breathe Out';
+            try {
+                // Clear canvas
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // ===== FACE DETECTION =====
+                const faceResults = await faceLandmarker.detectForVideo(video, now);
+                
+                if (faceResults.faceLandmarks && faceResults.faceLandmarks.length > 0) {
+                    const landmarks = faceResults.faceLandmarks[0];
+                    
+                    updateStatus('faceStatus', 'Detected', true);
+                    document.getElementById('faceCount').textContent = '1';
+                    
+                    // Draw face mesh
+                    drawFaceMesh(ctx, landmarks, canvas.width, canvas.height);
+                    
+                    // Extract forehead region for rPPG
+                    const foreheadIndices = [10, 338, 297, 332, 284, 251, 389, 356, 454, 323, 361, 288];
+                    const foreheadLandmarks = foreheadIndices.map(i => landmarks[i]);
+                    
+                    // Extract green channel intensity
+                    const greenValue = extractGreenChannel(video, foreheadLandmarks, canvas.width, canvas.height);
+                    
+                    if (greenValue !== null) {
+                        greenChannelBuffer.push(greenValue);
+                        timestamps.push(Date.now());
+                        
+                        if (greenChannelBuffer.length > BUFFER_SIZE) {
+                            greenChannelBuffer.shift();
+                            timestamps.shift();
+                        }
+                        
+                        // Process rPPG signal
+                        if (greenChannelBuffer.length >= MIN_SIGNAL_LENGTH) {
+                            processRPPG();
+                            updateStatus('signalStatus', 'Good', true);
+                        } else {
+                            updateStatus('signalStatus', 'Collecting...', false);
+                        }
+                    }
+                    
+                    // Draw forehead ROI
+                    drawROI(ctx, foreheadLandmarks, canvas.width, canvas.height, '#667eea');
+                    
+                } else {
+                    updateStatus('faceStatus', 'Not Detected', false);
+                    document.getElementById('faceCount').textContent = '0';
+                    document.getElementById('hrvValue').textContent = '--';
+                    document.getElementById('hrValue').textContent = '--';
+                    updateStatus('signalStatus', 'No Face', false);
+                }
+                
+                // ===== POSE DETECTION =====
+                const poseResults = await poseLandmarker.detectForVideo(video, now);
+                
+                if (poseResults.landmarks && poseResults.landmarks.length > 0) {
+                    const landmarks = poseResults.landmarks[0];
+                    
+                    updateStatus('poseStatus', 'Detected', true);
+                    document.getElementById('poseDetected').textContent = 'Yes';
+                    
+                    // Get shoulder positions
+                    const leftShoulder = landmarks[11];
+                    const rightShoulder = landmarks[12];
+                    
+                    if (leftShoulder.visibility > 0.5 && rightShoulder.visibility > 0.5) {
+                        const avgY = (leftShoulder.y + rightShoulder.y) / 2;
+                        
+                        shoulderBuffer.push({ time: Date.now(), y: avgY });
+                        
+                        if (shoulderBuffer.length > BUFFER_SIZE) {
+                            shoulderBuffer.shift();
+                        }
+                        
+                        // Process breathing
+                        if (shoulderBuffer.length >= MIN_SIGNAL_LENGTH) {
+                            processBreathing();
+                        }
+                        
+                        // Draw shoulder markers
+                        drawLandmark(ctx, leftShoulder, canvas.width, canvas.height, '#34d399');
+                        drawLandmark(ctx, rightShoulder, canvas.width, canvas.height, '#34d399');
+                    }
+                    
+                } else {
+                    updateStatus('poseStatus', 'Not Detected', false);
+                    document.getElementById('poseDetected').textContent = 'No';
+                    document.getElementById('rrValue').textContent = '--';
+                }
+                
+                // Update FPS
+                frameCount++;
+                if (Date.now() - lastFrameTime > 1000) {
+                    document.getElementById('fps').textContent = frameCount;
+                    frameCount = 0;
+                    lastFrameTime = Date.now();
+                }
+                
+                // Update signal quality
+                updateSignalQuality();
+                
+                // Draw signal
+                drawSignal();
+                
+            } catch (error) {
+                console.error('Frame processing error:', error);
             }
             
-            const circle = document.getElementById('breathCircle');
-            circle.style.transform = `scale(${scale})`;
-            document.getElementById('breathText').textContent = text;
-            
-            // Update progress ring
-            const circumference = 2 * Math.PI * 155;
-            const offset = circumference * (1 - progress);
-            document.getElementById('progressCircle').style.strokeDasharray = circumference;
-            document.getElementById('progressCircle').style.strokeDashoffset = offset;
-            
-            if (elapsed < 100) {
-                breathCount++;
-                document.getElementById('breathCount').textContent = breathCount;
-            }
-            
-            animationFrame = requestAnimationFrame(animate);
+            // Continue processing
+            animationId = requestAnimationFrame(processFrame);
         }
         
-        function updateSessionTime() {
-            if (!isRunning) return;
-            
-            const elapsed = Math.floor((Date.now() - sessionStartTime) / 1000);
-            const minutes = Math.floor(elapsed / 60);
-            const seconds = elapsed % 60;
-            document.getElementById('sessionTime').textContent = 
-                `${minutes}:${seconds.toString().padStart(2, '0')}`;
-            
-            setTimeout(updateSessionTime, 1000);
-        }
-        
-        function startDataCollection() {
-            setInterval(() => {
-                if (!isRunning) return;
+        // ========== rPPG PROCESSING ==========
+        function extractGreenChannel(video, landmarks, canvasWidth, canvasHeight) {
+            try {
+                // Create temporary canvas
+                const tempCanvas = document.createElement('canvas');
+                const tempCtx = tempCanvas.getContext('2d', { willReadFrequently: true });
+                tempCanvas.width = canvasWidth;
+                tempCanvas.height = canvasHeight;
                 
-                const hrv = 45 + Math.sin(Date.now() / 10000) * 15 + (Math.random() * 10 - 5);
-                const hr = 65 + Math.sin(Date.now() / 8000) * 5 + (Math.random() * 4 - 2);
-                const breathRate = 5.5 + Math.random();
+                // Draw video frame
+                tempCtx.drawImage(video, 0, 0, canvasWidth, canvasHeight);
                 
-                document.getElementById('hrvValue').textContent = hrv.toFixed(1);
-                document.getElementById('hrValue').textContent = Math.round(hr);
-                document.getElementById('breathRateValue').textContent = breathRate.toFixed(1);
+                // Get bounding box of forehead region
+                let minX = Infinity, minY = Infinity;
+                let maxX = -Infinity, maxY = -Infinity;
                 
-                const compliance = Math.abs(breathRate - 6) < 0.8 ? '✅ Good' : '⚠️ Adjust';
-                document.getElementById('complianceStatus').textContent = `Compliance: ${compliance}`;
-                
-                sessionData.push({
-                    timestamp: Date.now(),
-                    hrv: hrv,
-                    heartRate: hr,
-                    breathRate: breathRate
+                landmarks.forEach(lm => {
+                    const x = lm.x * canvasWidth;
+                    const y = lm.y * canvasHeight;
+                    minX = Math.min(minX, x);
+                    minY = Math.min(minY, y);
+                    maxX = Math.max(maxX, x);
+                    maxY = Math.max(maxY, y);
                 });
                 
-                document.getElementById('dataCount').textContent = sessionData.length;
+                const width = maxX - minX;
+                const height = maxY - minY;
                 
-                // Update chart
-                hrvChart.data.labels.push('');
-                hrvChart.data.datasets[0].data.push(hrv);
-                if (hrvChart.data.labels.length > 20) {
-                    hrvChart.data.labels.shift();
-                    hrvChart.data.datasets[0].data.shift();
+                // Extract pixel data
+                const imageData = tempCtx.getImageData(minX, minY, width, height);
+                const data = imageData.data;
+                
+                // Calculate mean green channel value
+                let greenSum = 0;
+                let pixelCount = 0;
+                
+                for (let i = 0; i < data.length; i += 4) {
+                    const r = data[i];
+                    const g = data[i + 1];
+                    const b = data[i + 2];
+                    
+                    // Only use skin-tone pixels
+                    if (r > 95 && g > 40 && b > 20 && 
+                        r > g && r > b && 
+                        Math.abs(r - g) > 15) {
+                        greenSum += g;
+                        pixelCount++;
+                    }
                 }
-                hrvChart.update('none');
                 
-            }, 3000);
+                if (pixelCount > 100) {
+                    return greenSum / pixelCount;
+                }
+                
+                return null;
+                
+            } catch (error) {
+                console.error('Green channel extraction error:', error);
+                return null;
+            }
         }
         
-        function exportCSV() {
-            if (sessionData.length === 0) {
-                alert('No data to export');
-                return;
+        function processRPPG() {
+            if (greenChannelBuffer.length < MIN_SIGNAL_LENGTH) return;
+            
+            // 1. Detrend signal
+            const detrended = detrend(greenChannelBuffer);
+            
+            // 2. Apply bandpass filter (0.7 - 4 Hz for heart rate)
+            const filtered = bandpassFilter(detrended, 30, 0.7, 4.0);
+            
+            // 3. Find peaks
+            const peaks = findPeaks(filtered, 0.6);
+            
+            if (peaks.length >= 2) {
+                // Calculate RR intervals (in ms)
+                const newRRIntervals = [];
+                for (let i = 1; i < peaks.length; i++) {
+                    const interval = (timestamps[peaks[i]] - timestamps[peaks[i-1]]);
+                    if (interval > 400 && interval < 2000) { // Valid heart rate range
+                        newRRIntervals.push(interval);
+                    }
+                }
+                
+                if (newRRIntervals.length > 0) {
+                    rrIntervals = newRRIntervals;
+                    
+                    // Calculate heart rate
+                    const avgRR = rrIntervals.reduce((a,b) => a+b) / rrIntervals.length;
+                    const hr = 60000 / avgRR;
+                    
+                    document.getElementById('hrValue').textContent = Math.round(hr);
+                    
+                    // Calculate RMSSD
+                    if (rrIntervals.length >= 2) {
+                        let sumSquaredDiff = 0;
+                        for (let i = 1; i < rrIntervals.length; i++) {
+                            const diff = rrIntervals[i] - rrIntervals[i-1];
+                            sumSquaredDiff += diff * diff;
+                        }
+                        const rmssd = Math.sqrt(sumSquaredDiff / (rrIntervals.length - 1));
+                        
+                        document.getElementById('hrvValue').textContent = rmssd.toFixed(1);
+                        
+                        // Calculate confidence based on signal quality
+                        const confidence = Math.min(100, (peaks.length / 10) * 100);
+                        document.getElementById('hrvConfidence').textContent = confidence.toFixed(0) + '%';
+                        
+                        // Update chart
+                        updateChart(rmssd);
+                    }
+                }
+            }
+        }
+        
+        // ========== BREATHING PROCESSING ==========
+        function processBreathing() {
+            if (shoulderBuffer.length < MIN_SIGNAL_LENGTH) return;
+            
+            // Extract Y positions
+            const signal = shoulderBuffer.map(d => d.y);
+            
+            // Smooth signal
+            const smoothed = movingAverage(signal, 5);
+            
+            // Find breath peaks (inhales = shoulders rise = Y decreases)
+            const inverted = smoothed.map(v => -v);
+            const peaks = findPeaks(inverted, 0.5);
+            
+            if (peaks.length >= 2) {
+                // Calculate breath intervals
+                const breathIntervals = [];
+                for (let i = 1; i < peaks.length; i++) {
+                    const interval = shoulderBuffer[peaks[i]].time - shoulderBuffer[peaks[i-1]].time;
+                    breathIntervals.push(interval);
+                }
+                
+                if (breathIntervals.length > 0) {
+                    const avgInterval = breathIntervals.reduce((a,b) => a+b) / breathIntervals.length;
+                    const breathRate = 60000 / avgInterval;
+                    
+                    if (breathRate > 3 && breathRate < 40) {
+                        document.getElementById('rrValue').textContent = breathRate.toFixed(1);
+                    }
+                }
+            }
+        }
+        
+        // ========== SIGNAL PROCESSING UTILITIES ==========
+        function detrend(signal) {
+            const n = signal.length;
+            const x = Array.from({ length: n }, (_, i) => i);
+            const y = signal;
+            
+            const meanX = x.reduce((a,b) => a+b) / n;
+            const meanY = y.reduce((a,b) => a+b) / n;
+            
+            let num = 0, den = 0;
+            for (let i = 0; i < n; i++) {
+                num += (x[i] - meanX) * (y[i] - meanY);
+                den += (x[i] - meanX) * (x[i] - meanX);
             }
             
-            let csv = 'Timestamp,HRV (ms),Heart Rate (bpm),Breath Rate (bpm)\n';
-            sessionData.forEach(d => {
-                csv += `${new Date(d.timestamp).toISOString()},${d.hrv.toFixed(2)},${d.heartRate.toFixed(1)},${d.breathRate.toFixed(2)}\n`;
+            const slope = num / den;
+            const intercept = meanY - slope * meanX;
+            
+            return signal.map((val, i) => val - (slope * i + intercept));
+        }
+        
+        function bandpassFilter(signal, fs, lowcut, highcut) {
+            // Simple moving average approximation
+            // For production, use proper Butterworth filter
+            const smoothed = movingAverage(signal, 3);
+            return smoothed;
+        }
+        
+        function movingAverage(signal, windowSize) {
+            const result = [];
+            for (let i = 0; i < signal.length; i++) {
+                let sum = 0;
+                let count = 0;
+                for (let j = Math.max(0, i - windowSize); j <= Math.min(signal.length - 1, i + windowSize); j++) {
+                    sum += signal[j];
+                    count++;
+                }
+                result.push(sum / count);
+            }
+            return result;
+        }
+        
+        function findPeaks(signal, threshold) {
+            const peaks = [];
+            const mean = signal.reduce((a,b) => a+b) / signal.length;
+            const std = Math.sqrt(signal.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / signal.length);
+            const minPeakHeight = mean + threshold * std;
+            
+            for (let i = 1; i < signal.length - 1; i++) {
+                if (signal[i] > signal[i-1] && 
+                    signal[i] > signal[i+1] && 
+                    signal[i] > minPeakHeight) {
+                    peaks.push(i);
+                }
+            }
+            
+            return peaks;
+        }
+        
+        // ========== DRAWING FUNCTIONS ==========
+        function drawFaceMesh(ctx, landmarks, width, height) {
+            ctx.strokeStyle = 'rgba(102, 126, 234, 0.3)';
+            ctx.lineWidth = 1;
+            
+            // Draw minimal face outline
+            const connections = [
+                [10, 338], [338, 297], [297, 332], [332, 284],
+                [284, 251], [251, 389], [389, 356], [356, 454],
+                [454, 323], [323, 361], [361, 288], [288, 397],
+                [397, 365], [365, 379], [379, 378], [378, 400],
+                [400, 377], [377, 152], [152, 148], [148, 176],
+                [176, 149], [149, 150], [150, 136], [136, 172],
+                [172, 58], [58, 132], [132, 93], [93, 234],
+                [234, 127], [127, 162], [162, 21], [21, 54],
+                [54, 103], [103, 67], [67, 109], [109, 10]
+            ];
+            
+            ctx.beginPath();
+            connections.forEach(([start, end]) => {
+                const p1 = landmarks[start];
+                const p2 = landmarks[end];
+                ctx.moveTo(p1.x * width, p1.y * height);
+                ctx.lineTo(p2.x * width, p2.y * height);
+            });
+            ctx.stroke();
+        }
+        
+        function drawROI(ctx, landmarks, width, height, color) {
+            ctx.fillStyle = color + '33';
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
+            
+            ctx.beginPath();
+            landmarks.forEach((lm, i) => {
+                const x = lm.x * width;
+                const y = lm.y * height;
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+        }
+        
+        function drawLandmark(ctx, landmark, width, height, color) {
+            const x = landmark.x * width;
+            const y = landmark.y * height;
+            
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.arc(x, y, 6, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(x, y, 6, 0, 2 * Math.PI);
+            ctx.stroke();
+        }
+        
+        function drawSignal() {
+            const canvas = document.getElementById('signalCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            
+            if (greenChannelBuffer.length < 2) return;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Normalize signal
+            const min = Math.min(...greenChannelBuffer);
+            const max = Math.max(...greenChannelBuffer);
+            const range = max - min || 1;
+            
+            ctx.strokeStyle = '#667eea';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            
+            greenChannelBuffer.forEach((val, i) => {
+                const x = (i / greenChannelBuffer.length) * canvas.width;
+                const y = canvas.height - ((val - min) / range) * canvas.height;
+                
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
             });
             
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `session_${participantData.participantId}_${Date.now()}.csv`;
-            a.click();
+            ctx.stroke();
         }
         
-        function exportJSON() {
-            if (sessionData.length === 0) {
-                alert('No data to export');
-                return;
+        // ========== CHART ==========
+        function initChart() {
+            const ctx = document.getElementById('hrvChart').getContext('2d');
+            hrvChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'HRV (RMSSD)',
+                        data: [],
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { 
+                            display: true,
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            ticks: { color: '#888' }
+                        },
+                        x: { 
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+        
+        function updateChart(value) {
+            if (!hrvChart) return;
+            
+            hrvChart.data.labels.push('');
+            hrvChart.data.datasets[0].data.push(value);
+            
+            if (hrvChart.data.labels.length > 30) {
+                hrvChart.data.labels.shift();
+                hrvChart.data.datasets[0].data.shift();
             }
             
-            const exportData = {
-                participant: participantData,
-                sessionStart: sessionStartTime,
-                duration: Date.now() - sessionStartTime,
-                breathCount: breathCount,
-                data: sessionData
+            hrvChart.update('none');
+        }
+        
+        // ========== UI HELPERS ==========
+        function updateStatus(elementId, text, active) {
+            document.getElementById(elementId).textContent = text;
+            const dotId = elementId + 'Dot';
+            const dot = document.getElementById(dotId);
+            if (dot) {
+                dot.className = active ? 'status-dot active' : 'status-dot';
+            }
+        }
+        
+        function updateSignalQuality() {
+            let quality = 'Poor';
+            
+            if (greenChannelBuffer.length >= MIN_SIGNAL_LENGTH && rrIntervals.length >= 2) {
+                quality = 'Good';
+            } else if (greenChannelBuffer.length >= MIN_SIGNAL_LENGTH / 2) {
+                quality = 'Fair';
+            }
+            
+            document.getElementById('signalQuality').textContent = quality;
+        }
+        
+        function updateInfoBox(message, type) {
+            const box = document.getElementById('infoBox');
+            box.innerHTML = message;
+            
+            const colors = {
+                success: 'rgba(52, 211, 153, 0.1)',
+                error: 'rgba(239, 68, 68, 0.1)',
+                loading: 'rgba(251, 191, 36, 0.1)',
+                info: 'rgba(102, 126, 234, 0.1)'
             };
             
-            const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `session_${participantData.participantId}_${Date.now()}.json`;
-            a.click();
+            box.style.background = colors[type] || colors.info;
         }
         
-        function resetSession() {
-            if (confirm('Reset all session data?')) {
-                sessionData = [];
-                breathCount = 0;
-                sessionStartTime = null;
-                hrvChart.data.labels = [];
-                hrvChart.data.datasets[0].data = [];
-                hrvChart.update();
-                document.getElementById('dataCount').textContent = '0';
-                document.getElementById('breathCount').textContent = '0';
-                document.getElementById('sessionTime').textContent = '0:00';
-            }
-        }
+        console.log('🚀 Real biometric detection system loaded');
     </script>
 </body>
 </html>
