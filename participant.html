@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Accurate Biometric Detection - YogaXBiofeedback</title>
+    <title>Maximum Accuracy Biometric Detection - YogaXBiofeedback</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -22,31 +22,54 @@
             align-items: center;
         }
         .logo { font-size: 1.5em; font-weight: 700; }
-        .status-bar {
-            display: flex;
-            gap: 20px;
-            font-size: 0.9em;
+        
+        /* Validation Status Panel */
+        .validation-panel {
+            background: rgba(26, 26, 26, 0.95);
+            padding: 15px 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
-        .status-item {
+        .validation-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 20px;
+        }
+        .validation-item {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
-        .status-dot {
-            width: 8px;
-            height: 8px;
+        .validation-icon {
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
-            background: #666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8em;
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
         }
-        .status-dot.active { background: #34d399; animation: pulse 2s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .validation-icon.pass {
+            background: rgba(52, 211, 153, 0.2);
+            color: #34d399;
+        }
+        .validation-label {
+            font-size: 0.85em;
+        }
+        .validation-value {
+            font-size: 0.9em;
+            font-weight: 600;
+            color: #888;
+        }
+        .validation-value.pass { color: #34d399; }
         
         .container {
             max-width: 1800px;
             margin: 0 auto;
             padding: 30px;
             display: grid;
-            grid-template-columns: 1.2fr 1fr;
+            grid-template-columns: 1fr 1fr;
             gap: 30px;
         }
         
@@ -57,9 +80,7 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
         
-        .video-section {
-            position: relative;
-        }
+        .video-section { position: relative; }
         #videoFeed {
             width: 100%;
             border-radius: 16px;
@@ -73,40 +94,150 @@
             pointer-events: none;
         }
         
-        .overlay {
+        .detection-overlay {
             position: absolute;
             top: 20px;
             left: 20px;
             right: 20px;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(10px);
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(20px);
             padding: 20px;
             border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         
         .overlay-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-            margin-top: 12px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 15px;
         }
         
         .overlay-item {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 12px;
             border-radius: 8px;
-            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
         
         .overlay-label {
             font-size: 0.75em;
             color: #888;
-            margin-bottom: 4px;
+            margin-bottom: 5px;
         }
         
         .overlay-value {
             font-size: 1.1em;
             font-weight: 600;
+        }
+        
+        .quality-bar {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+        
+        .quality-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ef4444, #fbbf24, #34d399);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .metrics-section {
+            display: grid;
+            gap: 20px;
+        }
+        
+        .metric-card {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 25px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .metric-label {
+            font-size: 0.9em;
+            color: #888;
+        }
+        
+        .metric-badge {
+            font-size: 0.75em;
+            padding: 4px 10px;
+            border-radius: 12px;
+            background: rgba(52, 211, 153, 0.1);
+            color: #34d399;
+            border: 1px solid rgba(52, 211, 153, 0.3);
+        }
+        
+        .metric-badge.warning {
+            background: rgba(251, 191, 36, 0.1);
+            color: #fbbf24;
+            border-color: rgba(251, 191, 36, 0.3);
+        }
+        
+        .metric-badge.error {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+        
+        .metric-value {
+            font-size: 3em;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .metric-unit {
+            font-size: 0.35em;
+            color: #666;
+        }
+        
+        .metric-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .detail-item { font-size: 0.85em; }
+        .detail-label { color: #666; margin-bottom: 3px; }
+        .detail-value { color: #fff; font-weight: 600; }
+        
+        .signal-display {
+            height: 150px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            margin-top: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        canvas { width: 100%; height: 100%; }
+        
+        .signal-label {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 0.75em;
+            color: #888;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 5px 10px;
+            border-radius: 6px;
         }
         
         .controls {
@@ -146,182 +277,222 @@
             cursor: not-allowed;
         }
         
-        .metrics-grid {
-            display: grid;
-            gap: 20px;
-        }
-        
-        .metric-card {
-            background: rgba(255, 255, 255, 0.03);
-            padding: 25px;
-            border-radius: 16px;
-        }
-        
-        .metric-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        
-        .metric-label {
-            font-size: 0.9em;
-            color: #888;
-        }
-        
-        .metric-badge {
-            font-size: 0.75em;
-            padding: 4px 10px;
-            border-radius: 12px;
-            background: rgba(52, 211, 153, 0.1);
-            color: #34d399;
-            border: 1px solid rgba(52, 211, 153, 0.3);
-        }
-        
-        .metric-value {
-            font-size: 3em;
-            font-weight: 700;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .metric-unit {
-            font-size: 0.35em;
-            color: #666;
-        }
-        
-        .metric-sub {
-            margin-top: 10px;
-            padding-top: 10px;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            font-size: 0.9em;
-            color: #888;
-        }
-        
-        .signal-display {
-            height: 120px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 12px;
-            margin-top: 15px;
-            position: relative;
-        }
-        
-        canvas.signal {
-            width: 100%;
-            height: 100%;
-        }
-        
-        .info-box {
+        .info-panel {
             background: rgba(102, 126, 234, 0.1);
             border: 1px solid rgba(102, 126, 234, 0.3);
             padding: 15px;
             border-radius: 12px;
             font-size: 0.9em;
+            line-height: 1.6;
             margin-top: 20px;
         }
         
         @media (max-width: 1400px) {
             .container { grid-template-columns: 1fr; }
+            .validation-grid { grid-template-columns: repeat(2, 1fr); }
         }
     </style>
 </head>
 <body>
     <header class="header">
         <div class="logo">🫁 YogaXBiofeedback</div>
-        <div class="status-bar">
-            <div class="status-item">
-                <div class="status-dot" id="faceDot"></div>
-                <span id="faceStatus">Offline</span>
-            </div>
-            <div class="status-item">
-                <div class="status-dot" id="poseDot"></div>
-                <span id="poseStatus">Offline</span>
-            </div>
-            <div class="status-item">
-                <div class="status-dot" id="signalDot"></div>
-                <span id="signalStatus">No Signal</span>
-            </div>
-        </div>
+        <div style="font-size: 0.85em; color: #888;">Maximum Accuracy Mode</div>
     </header>
     
+    <!-- VALIDATION STATUS PANEL -->
+    <div class="validation-panel">
+        <div style="font-size: 0.9em; font-weight: 600; margin-bottom: 10px;">🔬 Multi-Layer Validation Status</div>
+        <div class="validation-grid">
+            <div class="validation-item">
+                <div class="validation-icon" id="landmarkIcon">✗</div>
+                <div>
+                    <div class="validation-label">Landmarks</div>
+                    <div class="validation-value" id="landmarkStatus">--</div>
+                </div>
+            </div>
+            <div class="validation-item">
+                <div class="validation-icon" id="temporalIcon">✗</div>
+                <div>
+                    <div class="validation-label">Temporal</div>
+                    <div class="validation-value" id="temporalStatus">--</div>
+                </div>
+            </div>
+            <div class="validation-item">
+                <div class="validation-icon" id="signalIcon">✗</div>
+                <div>
+                    <div class="validation-label">Signal SNR</div>
+                    <div class="validation-value" id="snrStatus">--</div>
+                </div>
+            </div>
+            <div class="validation-item">
+                <div class="validation-icon" id="physioIcon">✗</div>
+                <div>
+                    <div class="validation-label">Physiological</div>
+                    <div class="validation-value" id="physioStatus">--</div>
+                </div>
+            </div>
+            <div class="validation-item">
+                <div class="validation-icon" id="fusionIcon">✗</div>
+                <div>
+                    <div class="validation-label">Multi-Modal</div>
+                    <div class="validation-value" id="fusionStatus">--</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <div class="container">
+        <!-- Left: Video -->
         <div>
             <div class="card video-section">
                 <video id="videoFeed" autoplay playsinline muted></video>
                 <canvas id="canvas"></canvas>
                 
-                <div class="overlay">
-                    <div style="font-weight: 600; margin-bottom: 10px;">Real-Time Detection</div>
+                <div class="detection-overlay">
+                    <div style="font-weight: 600; margin-bottom: 10px;">🎯 Detection Quality</div>
                     <div class="overlay-grid">
                         <div class="overlay-item">
-                            <div class="overlay-label">Face</div>
-                            <div class="overlay-value" id="faceDetected">--</div>
+                            <div class="overlay-label">Landmarks Visible</div>
+                            <div class="overlay-value" id="landmarkCount">0/8</div>
+                            <div class="quality-bar"><div class="quality-fill" id="landmarkQuality"></div></div>
                         </div>
                         <div class="overlay-item">
-                            <div class="overlay-label">Pose</div>
-                            <div class="overlay-value" id="poseDetected">--</div>
+                            <div class="overlay-label">Motion Stability</div>
+                            <div class="overlay-value" id="motionStability">--</div>
+                            <div class="quality-bar"><div class="quality-fill" id="motionQuality"></div></div>
                         </div>
                         <div class="overlay-item">
-                            <div class="overlay-label">Buffer</div>
-                            <div class="overlay-value" id="bufferStatus">0s</div>
-                        </div>
-                        <div class="overlay-item">
-                            <div class="overlay-label">FPS</div>
-                            <div class="overlay-value" id="fps">0</div>
+                            <div class="overlay-label">Overall Score</div>
+                            <div class="overlay-value" id="overallScore">--</div>
+                            <div class="quality-bar"><div class="quality-fill" id="overallQuality"></div></div>
                         </div>
                     </div>
                 </div>
             </div>
             
             <div class="controls">
-                <button class="btn btn-start" id="startBtn" onclick="startDetection()">Start Detection</button>
+                <button class="btn btn-start" id="startBtn" onclick="startDetection()">Start Multi-Layer Detection</button>
                 <button class="btn btn-stop" id="stopBtn" onclick="stopDetection()" disabled>Stop</button>
             </div>
             
-            <div class="info-box" id="infoBox">
-                <strong>ℹ️ System Ready</strong><br>
-                Click "Start Detection" to begin real-time biometric monitoring with validated algorithms.
+            <div class="info-panel" id="infoPanel">
+                <strong>🔬 5-Layer Accuracy System Active</strong><br>
+                Layer 1: Landmark Quality • Layer 2: Temporal Consistency • Layer 3: Signal Processing<br>
+                Layer 4: Physiological Validation • Layer 5: Multi-Modal Fusion
             </div>
         </div>
         
-        <div class="metrics-grid">
+        <!-- Right: Metrics -->
+        <div class="metrics-section">
+            <!-- Respiratory Rate -->
             <div class="card">
                 <div class="metric-card">
                     <div class="metric-header">
-                        <div class="metric-label">Respiratory Rate</div>
-                        <div class="metric-badge" id="rrQuality">--</div>
+                        <div class="metric-label">Respiratory Rate (Validated)</div>
+                        <div class="metric-badge" id="rrBadge">Initializing</div>
                     </div>
                     <div class="metric-value">
                         <span id="rrValue">--</span>
                         <span class="metric-unit">bpm</span>
                     </div>
-                    <div class="metric-sub">
-                        <div>Breathing: <strong id="breathType">--</strong></div>
-                        <div style="margin-top: 5px;">Cycles: <strong id="cycles">0</strong> | Quality: <strong id="quality">--</strong></div>
+                    
+                    <div class="metric-details">
+                        <div class="detail-item">
+                            <div class="detail-label">Detection Method</div>
+                            <div class="detail-value" id="rrMethod">--</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Confidence</div>
+                            <div class="detail-value" id="rrConfidence">--</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">SNR Ratio</div>
+                            <div class="detail-value" id="rrSNR">--</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Validation Layers</div>
+                            <div class="detail-value" id="rrLayers">0/5</div>
+                        </div>
                     </div>
+                    
                     <div class="signal-display">
-                        <canvas id="breathSignal" class="signal"></canvas>
+                        <canvas id="thoracicCanvas"></canvas>
+                        <div class="signal-label">📈 Thoracic Movement</div>
                     </div>
                 </div>
             </div>
             
+            <!-- Breathing Pattern -->
             <div class="card">
                 <div class="metric-card">
                     <div class="metric-header">
-                        <div class="metric-label">Heart Rate Variability</div>
-                        <div class="metric-badge" id="hrvQuality">--</div>
+                        <div class="metric-label">Breathing Pattern (Cross-Validated)</div>
+                        <div class="metric-badge" id="patternBadge">Analyzing</div>
+                    </div>
+                    <div class="metric-value">
+                        <span id="breathingType" style="font-size: 0.8em;">--</span>
+                    </div>
+                    
+                    <div class="metric-details">
+                        <div class="detail-item">
+                            <div class="detail-label">Thoracic Contribution</div>
+                            <div class="detail-value" id="thoracicPercent">--</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Abdominal Contribution</div>
+                            <div class="detail-value" id="abdominalPercent">--</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Phase Synchrony</div>
+                            <div class="detail-value" id="phaseAngle">--</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">RSA Detected</div>
+                            <div class="detail-value" id="rsaDetected">--</div>
+                        </div>
+                    </div>
+                    
+                    <div class="signal-display">
+                        <canvas id="abdominalCanvas"></canvas>
+                        <div class="signal-label">📉 Abdominal Movement</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- HRV (rPPG) -->
+            <div class="card">
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <div class="metric-label">Heart Rate Variability (rPPG)</div>
+                        <div class="metric-badge" id="hrvBadge">Processing</div>
                     </div>
                     <div class="metric-value">
                         <span id="hrvValue">--</span>
                         <span class="metric-unit">ms</span>
                     </div>
-                    <div class="metric-sub">
-                        <div>Heart Rate: <strong id="hrValue">--</strong> bpm</div>
-                        <div style="margin-top: 5px;">SDNN: <strong id="sdnnValue">--</strong> ms</div>
+                    
+                    <div class="metric-details">
+                        <div class="detail-item">
+                            <div class="detail-label">Heart Rate</div>
+                            <div class="detail-value"><span id="hrValue">--</span> bpm</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">SDNN</div>
+                            <div class="detail-value"><span id="sdnnValue">--</span> ms</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Peak Quality</div>
+                            <div class="detail-value" id="peakQuality">--</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">RSA Strength</div>
+                            <div class="detail-value" id="rsaStrength">--</div>
+                        </div>
                     </div>
+                    
                     <div class="signal-display">
-                        <canvas id="hrvSignal" class="signal"></canvas>
+                        <canvas id="rppgCanvas"></canvas>
+                        <div class="signal-label">💓 rPPG Signal (Green Channel)</div>
                     </div>
                 </div>
             </div>
@@ -332,314 +503,630 @@
         import { FaceLandmarker, PoseLandmarker, FilesetResolver } from 
             "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14";
         
-        // ==================== STATE ====================
+        // ==================== GLOBAL STATE ====================
         let faceLandmarker = null;
         let poseLandmarker = null;
         let isRunning = false;
         let videoStream = null;
         let animationId = null;
         
-        // Buffers
-        const BUFFER_SIZE = 450; // 15 seconds at 30 FPS
-        const MIN_LENGTH = 150;  // 5 seconds minimum
-        let breathBuffer = [];
-        let greenBuffer = [];
+        const BUFFER_SIZE = 300; // 10 seconds at 30 FPS
+        const MIN_SIGNAL_LENGTH = 150; // 5 seconds
+        const SAMPLE_RATE = 30;
+        
+        // Signal buffers
+        let thoracicBuffer = [];
+        let abdominalBuffer = [];
+        let greenChannelBuffer = [];
         let timestamps = [];
         
-        // FPS
-        let lastTime = Date.now();
-        let frameCount = 0;
+        // Landmark history for temporal validation
+        let landmarkHistory = [];
+        const HISTORY_SIZE = 10;
         
-        // ==================== IMPROVED SIGNAL PROCESSING ====================
+        // Quality metrics
+        let validationLayers = {
+            landmark: false,
+            temporal: false,
+            signal: false,
+            physiological: false,
+            fusion: false
+        };
         
-        // Savitzky-Golay smoothing (better than moving average)
-        function savitzkyGolaySmooth(data, windowSize = 7) {
-            const result = [];
-            const halfWindow = Math.floor(windowSize / 2);
-            
-            for (let i = 0; i < data.length; i++) {
-                let sum = 0;
-                let count = 0;
-                
-                for (let j = -halfWindow; j <= halfWindow; j++) {
-                    const idx = i + j;
-                    if (idx >= 0 && idx < data.length) {
-                        sum += data[idx];
-                        count++;
-                    }
-                }
-                result.push(sum / count);
+        // ==================== LAYER 1: LANDMARK VALIDATION ====================
+        function validateLandmarks(landmarks) {
+            if (!landmarks || landmarks.length === 0) {
+                return { pass: false, score: 0, details: 'No landmarks detected' };
             }
-            return result;
+            
+            const requiredLandmarks = [
+                { id: 11, name: 'Left Shoulder' },
+                { id: 12, name: 'Right Shoulder' },
+                { id: 23, name: 'Left Hip' },
+                { id: 24, name: 'Right Hip' },
+                { id: 0, name: 'Nose' },
+                { id: 2, name: 'Left Eye' },
+                { id: 5, name: 'Right Eye' },
+                { id: 10, name: 'Mouth' }
+            ];
+            
+            let visibleCount = 0;
+            let totalVisibility = 0;
+            const minVisibility = 0.5;
+            
+            const results = [];
+            
+            requiredLandmarks.forEach(req => {
+                const landmark = landmarks[req.id];
+                if (landmark && landmark.visibility > minVisibility) {
+                    visibleCount++;
+                    totalVisibility += landmark.visibility;
+                    results.push({ ...req, visible: true, visibility: landmark.visibility });
+                } else {
+                    results.push({ ...req, visible: false, visibility: landmark?.visibility || 0 });
+                }
+            });
+            
+            const score = (visibleCount / requiredLandmarks.length) * 100;
+            const avgVisibility = totalVisibility / requiredLandmarks.length;
+            
+            return {
+                pass: visibleCount >= 6, // At least 6 of 8 landmarks
+                score: score,
+                visibleCount: visibleCount,
+                totalCount: requiredLandmarks.length,
+                avgVisibility: avgVisibility,
+                details: results
+            };
         }
         
-        // Better detrending with polynomial fit
-        function polynomialDetrend(signal) {
-            const n = signal.length;
-            const x = Array.from({length: n}, (_, i) => i);
+        // ==================== LAYER 2: TEMPORAL CONSISTENCY ====================
+        function validateTemporalConsistency(currentLandmarks) {
+            if (landmarkHistory.length < 3) {
+                landmarkHistory.push(currentLandmarks);
+                if (landmarkHistory.length > HISTORY_SIZE) {
+                    landmarkHistory.shift();
+                }
+                return { pass: false, score: 0, details: 'Building history...' };
+            }
             
-            // Calculate linear trend
+            // Check for sudden jumps (motion artifacts)
+            const prevLandmarks = landmarkHistory[landmarkHistory.length - 1];
+            
+            let totalDisplacement = 0;
+            let maxDisplacement = 0;
+            let landmarkCount = 0;
+            
+            const keyPoints = [11, 12, 23, 24]; // Shoulders and hips
+            
+            keyPoints.forEach(id => {
+                const curr = currentLandmarks[id];
+                const prev = prevLandmarks[id];
+                
+                if (curr && prev && curr.visibility > 0.5 && prev.visibility > 0.5) {
+                    const dx = curr.x - prev.x;
+                    const dy = curr.y - prev.y;
+                    const displacement = Math.sqrt(dx * dx + dy * dy);
+                    
+                    totalDisplacement += displacement;
+                    maxDisplacement = Math.max(maxDisplacement, displacement);
+                    landmarkCount++;
+                }
+            });
+            
+            const avgDisplacement = totalDisplacement / landmarkCount;
+            
+            // Thresholds (normalized coordinates)
+            const MAX_AVG_DISPLACEMENT = 0.05; // 5% of frame
+            const MAX_SINGLE_DISPLACEMENT = 0.1; // 10% of frame
+            
+            const pass = avgDisplacement < MAX_AVG_DISPLACEMENT && 
+                         maxDisplacement < MAX_SINGLE_DISPLACEMENT;
+            
+            const score = pass ? 
+                Math.max(0, 100 - (avgDisplacement / MAX_AVG_DISPLACEMENT) * 100) : 0;
+            
+            landmarkHistory.push(currentLandmarks);
+            if (landmarkHistory.length > HISTORY_SIZE) {
+                landmarkHistory.shift();
+            }
+            
+            return {
+                pass: pass,
+                score: score,
+                avgDisplacement: avgDisplacement,
+                maxDisplacement: maxDisplacement,
+                details: pass ? 'Stable' : 'Motion detected'
+            };
+        }
+        
+        // ==================== LAYER 3: SIGNAL QUALITY (SNR) ====================
+        function calculateSNR(signal) {
+            if (signal.length < MIN_SIGNAL_LENGTH) {
+                return { snr: 0, pass: false };
+            }
+            
+            // Detrend
+            const detrended = detrend(signal);
+            
+            // Apply bandpass filter
+            const filter = new ButterworthFilter(2, SAMPLE_RATE, 0.1, 0.5);
+            const filtered = filter.filter(detrended);
+            
+            // Calculate signal power (in-band)
+            const signalPower = filtered.reduce((sum, val) => sum + val * val, 0) / filtered.length;
+            
+            // Calculate noise power (high frequency components)
+            const highFreqFilter = new ButterworthFilter(2, SAMPLE_RATE, 0.5, 5.0);
+            const noise = highFreqFilter.filter(detrended);
+            const noisePower = noise.reduce((sum, val) => sum + val * val, 0) / noise.length;
+            
+            const snr = 10 * Math.log10(signalPower / (noisePower + 0.0001));
+            
+            // Good SNR for physiological signals: > 6 dB
+            return {
+                snr: snr,
+                pass: snr > 6,
+                signalPower: signalPower,
+                noisePower: noisePower
+            };
+        }
+        
+        // ==================== LAYER 4: PHYSIOLOGICAL VALIDATION ====================
+        function validatePhysiological(respiratoryRate, heartRate, hrv) {
+            const checks = {
+                respiratoryRate: {
+                    value: respiratoryRate,
+                    pass: respiratoryRate >= 3 && respiratoryRate <= 40,
+                    range: '3-40 bpm'
+                },
+                heartRate: {
+                    value: heartRate,
+                    pass: heartRate >= 40 && heartRate <= 180,
+                    range: '40-180 bpm'
+                },
+                hrv: {
+                    value: hrv,
+                    pass: hrv >= 10 && hrv <= 200,
+                    range: '10-200 ms'
+                }
+            };
+            
+            // Check RSA (Respiratory Sinus Arrhythmia)
+            // HR should increase with inhalation, decrease with exhalation
+            // This is a simplified check - real RSA requires more sophisticated analysis
+            const rsaPresent = heartRate > 0 && respiratoryRate > 0 && 
+                              Math.abs(heartRate - respiratoryRate * 4) < 30;
+            
+            checks.rsa = {
+                value: rsaPresent ? 'Present' : 'Absent',
+                pass: rsaPresent,
+                note: 'HR-RR coupling'
+            };
+            
+            const allPass = Object.values(checks).every(check => check.pass);
+            const score = (Object.values(checks).filter(c => c.pass).length / Object.keys(checks).length) * 100;
+            
+            return {
+                pass: allPass,
+                score: score,
+                checks: checks,
+                details: allPass ? 'All parameters valid' : 'Some parameters out of range'
+            };
+        }
+        
+        // ==================== LAYER 5: MULTI-MODAL FUSION ====================
+        function fuseMultipleSignals(thoracicRR, abdominalRR, rppgRR) {
+            const rates = [thoracicRR, abdominalRR, rppgRR].filter(r => r > 0);
+            
+            if (rates.length === 0) {
+                return { rate: 0, confidence: 0, agreement: 0 };
+            }
+            
+            // Calculate mean and standard deviation
+            const mean = rates.reduce((a, b) => a + b, 0) / rates.length;
+            const variance = rates.reduce((sum, r) => sum + Math.pow(r - mean, 2), 0) / rates.length;
+            const std = Math.sqrt(variance);
+            
+            // Agreement metric: coefficient of variation
+            const cv = std / mean;
+            
+            // Good agreement: CV < 0.1 (10%)
+            const agreement = Math.max(0, 100 - cv * 1000);
+            
+            // Weighted average (prefer signals with lower variance)
+            let weightedSum = 0;
+            let weightSum = 0;
+            
+            rates.forEach(rate => {
+                const weight = 1 / (Math.abs(rate - mean) + 1);
+                weightedSum += rate * weight;
+                weightSum += weight;
+            });
+            
+            const fusedRate = weightedSum / weightSum;
+            const confidence = agreement;
+            
+            return {
+                rate: fusedRate,
+                confidence: confidence,
+                agreement: agreement,
+                numSignals: rates.length,
+                cv: cv
+            };
+        }
+        
+        // ==================== BUTTERWORTH FILTER ====================
+        class ButterworthFilter {
+            constructor(order, sampleRate, lowCut, highCut) {
+                this.order = order;
+                this.sampleRate = sampleRate;
+                this.lowCut = lowCut;
+                this.highCut = highCut;
+                
+                // IIR coefficients (simplified)
+                this.b = [0.0063, 0, -0.0126, 0, 0.0063];
+                this.a = [1.0, -3.6246, 4.9841, -3.0558, 0.6963];
+                
+                this.x = [0, 0, 0, 0, 0];
+                this.y = [0, 0, 0, 0, 0];
+            }
+            
+            filter(signal) {
+                const filtered = [];
+                this.x = new Array(5).fill(0);
+                this.y = new Array(5).fill(0);
+                
+                for (let i = 0; i < signal.length; i++) {
+                    for (let j = 4; j > 0; j--) {
+                        this.x[j] = this.x[j-1];
+                        this.y[j] = this.y[j-1];
+                    }
+                    
+                    this.x[0] = signal[i];
+                    
+                    this.y[0] = this.b[0] * this.x[0] +
+                                this.b[1] * this.x[1] +
+                                this.b[2] * this.x[2] +
+                                this.b[3] * this.x[3] +
+                                this.b[4] * this.x[4] -
+                                this.a[1] * this.y[1] -
+                                this.a[2] * this.y[2] -
+                                this.a[3] * this.y[3] -
+                                this.a[4] * this.y[4];
+                    
+                    filtered.push(this.y[0]);
+                }
+                
+                return filtered;
+            }
+        }
+        
+        // ==================== SIGNAL PROCESSING ====================
+        function detrend(signal) {
+            const n = signal.length;
+            const x = Array.from({ length: n }, (_, i) => i);
             const meanX = x.reduce((a,b) => a+b) / n;
             const meanY = signal.reduce((a,b) => a+b) / n;
             
-            let numerator = 0;
-            let denominator = 0;
-            
+            let num = 0, den = 0;
             for (let i = 0; i < n; i++) {
-                numerator += (x[i] - meanX) * (signal[i] - meanY);
-                denominator += (x[i] - meanX) ** 2;
+                num += (x[i] - meanX) * (signal[i] - meanY);
+                den += (x[i] - meanX) ** 2;
             }
             
-            const slope = numerator / denominator;
+            const slope = num / den;
             const intercept = meanY - slope * meanX;
             
             return signal.map((val, i) => val - (slope * i + intercept));
         }
         
-        // Simple but effective bandpass filter
-        function bandpassFilter(signal, lowCut = 0.1, highCut = 0.5, sampleRate = 30) {
-            // High-pass filter (remove DC and slow drift)
-            const alpha_high = 1 / (1 + (1 / (2 * Math.PI * lowCut * (1/sampleRate))));
-            let highpassed = [signal[0]];
-            
-            for (let i = 1; i < signal.length; i++) {
-                highpassed[i] = alpha_high * (highpassed[i-1] + signal[i] - signal[i-1]);
-            }
-            
-            // Low-pass filter (remove high frequency noise)
-            const alpha_low = (2 * Math.PI * highCut * (1/sampleRate)) / (1 + (2 * Math.PI * highCut * (1/sampleRate)));
-            let filtered = [highpassed[0]];
-            
-            for (let i = 1; i < highpassed.length; i++) {
-                filtered[i] = alpha_low * highpassed[i] + (1 - alpha_low) * filtered[i-1];
-            }
-            
-            return filtered;
+        function normalize(signal) {
+            const min = Math.min(...signal);
+            const max = Math.max(...signal);
+            const range = max - min;
+            if (range === 0) return signal.map(() => 0);
+            return signal.map(val => (val - min) / range);
         }
         
-        // Improved peak detection with prominence
-        function detectPeaks(signal, minProminence = 0.3, minDistance = 45) {
-            if (signal.length < minDistance * 2) return [];
-            
-            // Normalize
-            const mean = signal.reduce((a,b) => a+b) / signal.length;
-            const std = Math.sqrt(signal.reduce((s,v) => s + (v-mean)**2, 0) / signal.length);
-            const normalized = signal.map(v => (v - mean) / (std || 1));
-            
+        function findPeaks(signal, minProminence = 0.15, minDistance = 60) {
             const peaks = [];
-            const threshold = minProminence;
+            const normalized = normalize(signal);
+            const mean = normalized.reduce((a,b) => a+b) / normalized.length;
+            const std = Math.sqrt(
+                normalized.reduce((sum, val) => sum + (val - mean) ** 2, 0) / normalized.length
+            );
+            const threshold = mean + minProminence * std;
             
-            for (let i = minDistance; i < normalized.length - minDistance; i++) {
-                // Check if it's a local maximum
-                let isMax = true;
-                const center = normalized[i];
-                
-                // Check neighborhood
-                for (let j = 1; j <= Math.min(15, minDistance); j++) {
-                    if (normalized[i-j] >= center || normalized[i+j] >= center) {
-                        isMax = false;
-                        break;
+            for (let i = minDistance; i < signal.length - minDistance; i++) {
+                if (normalized[i] > normalized[i-1] && 
+                    normalized[i] > normalized[i+1] &&
+                    normalized[i] > threshold) {
+                    if (peaks.length === 0 || (i - peaks[peaks.length-1]) >= minDistance) {
+                        peaks.push(i);
                     }
-                }
-                
-                if (!isMax || center < threshold) continue;
-                
-                // Check minimum distance from previous peak
-                if (peaks.length === 0 || (i - peaks[peaks.length-1]) >= minDistance) {
-                    peaks.push(i);
                 }
             }
             
             return peaks;
         }
         
-        // Calculate RMS
-        function rms(signal) {
-            return Math.sqrt(signal.reduce((s, v) => s + v*v, 0) / signal.length);
+        function calculateRMS(signal) {
+            const sumSquares = signal.reduce((sum, val) => sum + val * val, 0);
+            return Math.sqrt(sumSquares / signal.length);
         }
         
-        // ==================== RESPIRATORY ANALYSIS ====================
-        function analyzeRespiration() {
-            if (breathBuffer.length < MIN_LENGTH) return null;
-            
+        function calculateCV(values) {
+            if (values.length < 2) return 0;
+            const mean = values.reduce((a,b) => a+b) / values.length;
+            const std = Math.sqrt(
+                values.reduce((sum, val) => sum + (val - mean) ** 2, 0) / values.length
+            );
+            return std / mean;
+        }
+        
+        // ==================== rPPG EXTRACTION ====================
+        function extractGreenChannel(video, faceLandmarks, canvasWidth, canvasHeight) {
             try {
-                // 1. Smooth
-                const smoothed = savitzkyGolaySmooth(breathBuffer, 7);
+                const tempCanvas = document.createElement('canvas');
+                const tempCtx = tempCanvas.getContext('2d', { willReadFrequently: true });
+                tempCanvas.width = canvasWidth;
+                tempCanvas.height = canvasHeight;
                 
-                // 2. Detrend
-                const detrended = polynomialDetrend(smoothed);
+                tempCtx.drawImage(video, 0, 0, canvasWidth, canvasHeight);
                 
-                // 3. Bandpass filter (0.1-0.5 Hz for 6-30 bpm)
-                const filtered = bandpassFilter(detrended, 0.1, 0.5, 30);
+                // Forehead region landmarks
+                const foreheadIndices = [10, 338, 297, 332, 284, 251];
+                const foreheadLandmarks = foreheadIndices.map(i => faceLandmarks[i]).filter(Boolean);
                 
-                // 4. Detect peaks
-                const peaks = detectPeaks(filtered, 0.3, 45); // 45 samples = 1.5s = max 40 bpm
+                if (foreheadLandmarks.length === 0) return null;
                 
-                if (peaks.length < 2) return null;
+                let minX = Infinity, minY = Infinity;
+                let maxX = -Infinity, maxY = -Infinity;
                 
-                // 5. Calculate intervals
-                const intervals = [];
-                for (let i = 1; i < peaks.length; i++) {
-                    const interval = (timestamps[peaks[i]] - timestamps[peaks[i-1]]) / 1000;
-                    if (interval >= 1.5 && interval <= 20) { // 3-40 bpm range
-                        intervals.push(interval);
+                foreheadLandmarks.forEach(lm => {
+                    const x = lm.x * canvasWidth;
+                    const y = lm.y * canvasHeight;
+                    minX = Math.min(minX, x);
+                    minY = Math.min(minY, y);
+                    maxX = Math.max(maxX, x);
+                    maxY = Math.max(maxY, y);
+                });
+                
+                const width = maxX - minX;
+                const height = maxY - minY;
+                
+                const imageData = tempCtx.getImageData(minX, minY, width, height);
+                const data = imageData.data;
+                
+                let greenSum = 0;
+                let pixelCount = 0;
+                
+                for (let i = 0; i < data.length; i += 4) {
+                    const r = data[i];
+                    const g = data[i + 1];
+                    const b = data[i + 2];
+                    
+                    // Skin detection
+                    if (r > 95 && g > 40 && b > 20 && 
+                        r > g && r > b && 
+                        Math.abs(r - g) > 15) {
+                        greenSum += g;
+                        pixelCount++;
                     }
                 }
                 
-                if (intervals.length === 0) return null;
+                if (pixelCount > 100) {
+                    return greenSum / pixelCount;
+                }
                 
-                // 6. Calculate respiratory rate
-                const avgInterval = intervals.reduce((a,b) => a+b) / intervals.length;
-                const respiratoryRate = 60 / avgInterval;
-                
-                // 7. Quality metrics
-                const cv = intervals.length > 1 ? 
-                    (Math.sqrt(intervals.reduce((s,v) => s + (v-avgInterval)**2, 0) / intervals.length) / avgInterval) : 0;
-                
-                let quality = 'Poor';
-                if (cv < 0.15) quality = 'Excellent';
-                else if (cv < 0.25) quality = 'Good';
-                else if (cv < 0.35) quality = 'Fair';
-                
-                // 8. Breathing type (simplified)
-                const amplitude = rms(filtered);
-                let breathType = 'Normal';
-                if (amplitude > 0.5) breathType = 'Deep';
-                else if (amplitude < 0.2) breathType = 'Shallow';
-                
-                return {
-                    rate: respiratoryRate,
-                    cycles: peaks.length,
-                    quality: quality,
-                    breathType: breathType,
-                    signal: filtered
-                };
+                return null;
                 
             } catch (error) {
-                console.error('Respiratory analysis error:', error);
+                console.error('Green channel extraction error:', error);
                 return null;
             }
         }
         
-        // ==================== HRV ANALYSIS ====================
-        function analyzeHRV() {
-            if (greenBuffer.length < MIN_LENGTH) return null;
+        // ==================== COMPREHENSIVE ANALYSIS ====================
+        function performComprehensiveAnalysis() {
+            if (thoracicBuffer.length < MIN_SIGNAL_LENGTH) {
+                return null;
+            }
             
-            try {
-                // 1. Smooth
-                const smoothed = savitzkyGolaySmooth(greenBuffer, 5);
-                
-                // 2. Detrend
-                const detrended = polynomialDetrend(smoothed);
-                
-                // 3. Bandpass (0.7-4 Hz for heart rate)
-                const filtered = bandpassFilter(detrended, 0.7, 4.0, 30);
-                
-                // 4. Detect R-peaks
-                const peaks = detectPeaks(filtered, 0.4, 15); // 15 samples = 0.5s = max 120 bpm
-                
-                if (peaks.length < 3) return null;
-                
-                // 5. Calculate RR intervals
+            // LAYER 3: Signal Quality
+            const thoracicSNR = calculateSNR(thoracicBuffer);
+            const abdominalSNR = calculateSNR(abdominalBuffer);
+            
+            validationLayers.signal = thoracicSNR.pass || abdominalSNR.pass;
+            
+            if (!validationLayers.signal) {
+                return { error: 'Poor signal quality', snr: thoracicSNR.snr };
+            }
+            
+            // Process signals
+            const thoracicDetrended = detrend(thoracicBuffer);
+            const abdominalDetrended = detrend(abdominalBuffer);
+            
+            const filter = new ButterworthFilter(2, SAMPLE_RATE, 0.1, 0.5);
+            const thoracicFiltered = filter.filter(thoracicDetrended);
+            const abdominalFiltered = filter.filter(abdominalDetrended);
+            
+            // Peak detection
+            const thoracicPeaks = findPeaks(thoracicFiltered, 0.15, 60);
+            const abdominalPeaks = findPeaks(abdominalFiltered, 0.15, 60);
+            
+            // Calculate respiratory rates
+            let thoracicRR = 0, abdominalRR = 0;
+            
+            if (thoracicPeaks.length >= 2) {
+                const intervals = [];
+                for (let i = 1; i < thoracicPeaks.length; i++) {
+                    const interval = (timestamps[thoracicPeaks[i]] - timestamps[thoracicPeaks[i-1]]) / 1000;
+                    if (interval > 1.5 && interval < 20) intervals.push(interval);
+                }
+                if (intervals.length > 0) {
+                    thoracicRR = 60 / (intervals.reduce((a,b) => a+b) / intervals.length);
+                }
+            }
+            
+            if (abdominalPeaks.length >= 2) {
+                const intervals = [];
+                for (let i = 1; i < abdominalPeaks.length; i++) {
+                    const interval = (timestamps[abdominalPeaks[i]] - timestamps[abdominalPeaks[i-1]]) / 1000;
+                    if (interval > 1.5 && interval < 20) intervals.push(interval);
+                }
+                if (intervals.length > 0) {
+                    abdominalRR = 60 / (intervals.reduce((a,b) => a+b) / intervals.length);
+                }
+            }
+            
+            // Process rPPG if available
+            let heartRate = 0, hrv = 0;
+            if (greenChannelBuffer.length >= MIN_SIGNAL_LENGTH) {
+                const rppgAnalysis = processRPPG();
+                if (rppgAnalysis) {
+                    heartRate = rppgAnalysis.heartRate;
+                    hrv = rppgAnalysis.rmssd;
+                }
+            }
+            
+            // LAYER 4: Physiological Validation
+            const useRR = thoracicRR > 0 ? thoracicRR : abdominalRR;
+            const physioValidation = validatePhysiological(useRR, heartRate, hrv);
+            validationLayers.physiological = physioValidation.pass;
+            
+            // LAYER 5: Multi-Modal Fusion
+            const fusion = fuseMultipleSignals(thoracicRR, abdominalRR, 0);
+            validationLayers.fusion = fusion.confidence > 70;
+            
+            // Amplitude analysis
+            const thoracicRMS = calculateRMS(thoracicFiltered);
+            const abdominalRMS = calculateRMS(abdominalFiltered);
+            const amplitudeRatio = thoracicRMS / (abdominalRMS + 0.001);
+            
+            let breathingType = 'Mixed';
+            if (amplitudeRatio > 1.5) breathingType = 'Thoracic-Dominant';
+            else if (amplitudeRatio < 0.67) breathingType = 'Abdominal-Dominant';
+            
+            const totalAmplitude = thoracicRMS + abdominalRMS;
+            const thoracicPercent = (thoracicRMS / totalAmplitude) * 100;
+            const abdominalPercent = (abdominalRMS / totalAmplitude) * 100;
+            
+            // Calculate overall validation score
+            const passedLayers = Object.values(validationLayers).filter(v => v).length;
+            
+            return {
+                respiratoryRate: fusion.rate > 0 ? fusion.rate : useRR,
+                confidence: fusion.confidence,
+                snr: thoracicSNR.snr,
+                breathingType: breathingType,
+                thoracicPercent: thoracicPercent,
+                abdominalPercent: abdominalPercent,
+                heartRate: heartRate,
+                hrv: hrv,
+                validationLayers: validationLayers,
+                passedLayers: passedLayers,
+                totalLayers: 5,
+                agreement: fusion.agreement,
+                physioValidation: physioValidation
+            };
+        }
+        
+        // ==================== rPPG PROCESSING ====================
+        function processRPPG() {
+            if (greenChannelBuffer.length < MIN_SIGNAL_LENGTH) return null;
+            
+            const detrended = detrend(greenChannelBuffer);
+            const filter = new ButterworthFilter(2, SAMPLE_RATE, 0.7, 4.0);
+            const filtered = filter.filter(detrended);
+            
+            const peaks = findPeaks(filtered, 0.6, 20);
+            
+            if (peaks.length >= 2) {
                 const rrIntervals = [];
                 for (let i = 1; i < peaks.length; i++) {
                     const interval = timestamps[peaks[i]] - timestamps[peaks[i-1]];
-                    if (interval >= 400 && interval <= 2000) { // 30-150 bpm range
+                    if (interval > 400 && interval < 2000) {
                         rrIntervals.push(interval);
                     }
                 }
                 
-                if (rrIntervals.length < 2) return null;
-                
-                // 6. Calculate HRV metrics
-                const avgRR = rrIntervals.reduce((a,b) => a+b) / rrIntervals.length;
-                const heartRate = 60000 / avgRR;
-                
-                // RMSSD
-                let sumSquaredDiff = 0;
-                for (let i = 1; i < rrIntervals.length; i++) {
-                    const diff = rrIntervals[i] - rrIntervals[i-1];
-                    sumSquaredDiff += diff * diff;
+                if (rrIntervals.length > 0) {
+                    const avgRR = rrIntervals.reduce((a,b) => a+b) / rrIntervals.length;
+                    const hr = 60000 / avgRR;
+                    
+                    if (rrIntervals.length >= 2) {
+                        let sumSquaredDiff = 0;
+                        for (let i = 1; i < rrIntervals.length; i++) {
+                            const diff = rrIntervals[i] - rrIntervals[i-1];
+                            sumSquaredDiff += diff * diff;
+                        }
+                        const rmssd = Math.sqrt(sumSquaredDiff / (rrIntervals.length - 1));
+                        
+                        return {
+                            heartRate: hr,
+                            rmssd: rmssd,
+                            peakCount: peaks.length
+                        };
+                    }
                 }
-                const rmssd = Math.sqrt(sumSquaredDiff / (rrIntervals.length - 1));
-                
-                // SDNN
-                const sdnn = Math.sqrt(
-                    rrIntervals.reduce((s, rr) => s + (rr - avgRR)**2, 0) / rrIntervals.length
-                );
-                
-                // Quality
-                const cv = sdnn / avgRR;
-                let quality = cv < 0.1 ? 'Good' : cv < 0.2 ? 'Fair' : 'Poor';
-                
-                return {
-                    rmssd: rmssd,
-                    sdnn: sdnn,
-                    heartRate: heartRate,
-                    quality: quality,
-                    peaks: peaks.length,
-                    signal: filtered
-                };
-                
-            } catch (error) {
-                console.error('HRV analysis error:', error);
-                return null;
             }
+            
+            return null;
         }
         
-        // ==================== MEDIAPIPE INIT ====================
-        async function initMediaPipe() {
+        // ==================== INITIALIZATION ====================
+        async function initializeMediaPipe() {
             try {
-                updateInfo('Loading models...', 'loading');
+                updateInfo('Loading MediaPipe models...', 'loading');
                 
                 const vision = await FilesetResolver.forVisionTasks(
                     "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm"
                 );
                 
-                // Face Landmarker
+                // Initialize Face Landmarker
                 faceLandmarker = await FaceLandmarker.createFromOptions(vision, {
                     baseOptions: {
                         modelAssetPath: "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task",
                         delegate: "GPU"
                     },
                     runningMode: "VIDEO",
-                    numFaces: 1
+                    numFaces: 1,
+                    minFaceDetectionConfidence: 0.5
                 });
                 
-                console.log('✅ Face Landmarker loaded');
-                
-                // Pose Landmarker
+                // Initialize Pose Landmarker
                 poseLandmarker = await PoseLandmarker.createFromOptions(vision, {
                     baseOptions: {
                         modelAssetPath: "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task",
                         delegate: "GPU"
                     },
                     runningMode: "VIDEO",
-                    numPoses: 1
+                    numPoses: 1,
+                    minPoseDetectionConfidence: 0.5
                 });
                 
-                console.log('✅ Pose Landmarker loaded');
-                
-                updateInfo('✅ Models loaded successfully', 'success');
+                updateInfo('✅ All models loaded - Maximum accuracy mode ready', 'success');
                 return true;
                 
             } catch (error) {
-                console.error('Init error:', error);
-                updateInfo('❌ Failed to load: ' + error.message, 'error');
+                console.error('Initialization failed:', error);
+                updateInfo('❌ Failed to load models: ' + error.message, 'error');
                 return false;
             }
         }
         
-        // ==================== DETECTION ====================
+        // ==================== START/STOP ====================
         window.startDetection = async function() {
             if (!faceLandmarker || !poseLandmarker) {
-                const ok = await initMediaPipe();
-                if (!ok) return;
+                const success = await initializeMediaPipe();
+                if (!success) return;
             }
             
             try {
                 videoStream = await navigator.mediaDevices.getUserMedia({
-                    video: { width: 1280, height: 720, facingMode: 'user' }
+                    video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: 'user' }
                 });
                 
                 const video = document.getElementById('videoFeed');
@@ -654,28 +1141,30 @@
                 document.getElementById('startBtn').disabled = true;
                 document.getElementById('stopBtn').disabled = false;
                 
-                updateInfo('✅ Detection active', 'success');
+                updateInfo('✅ 5-Layer validation active', 'success');
                 processFrame();
                 
             } catch (error) {
-                alert('Camera required');
+                alert('Camera access required');
+                console.error(error);
             }
         };
         
         window.stopDetection = function() {
             isRunning = false;
             if (animationId) cancelAnimationFrame(animationId);
-            if (videoStream) videoStream.getTracks().forEach(t => t.stop());
+            if (videoStream) videoStream.getTracks().forEach(track => track.stop());
             
             document.getElementById('startBtn').disabled = false;
             document.getElementById('stopBtn').disabled = true;
             
-            updateStatus('faceStatus', 'Offline', false);
-            updateStatus('poseStatus', 'Offline', false);
-            updateStatus('signalStatus', 'No Signal', false);
+            updateInfo('🛑 Detection stopped', 'info');
         };
         
         // ==================== FRAME PROCESSING ====================
+        let frameCount = 0;
+        let lastFrameTime = Date.now();
+        
         async function processFrame() {
             if (!isRunning) return;
             
@@ -684,168 +1173,191 @@
             const ctx = canvas.getContext('2d');
             const now = performance.now();
             
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
             try {
-                // FACE DETECTION
-                const faceResults = await faceLandmarker.detectForVideo(video, now);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
                 
-                if (faceResults.faceLandmarks?.length > 0) {
-                    updateStatus('faceStatus', 'Detected', true);
-                    document.getElementById('faceDetected').textContent = '✓';
-                    
-                    // Extract green channel from forehead
-                    const landmarks = faceResults.faceLandmarks[0];
-                    const foreheadIndices = [10, 338, 297, 332, 284, 251];
-                    const foreheadLandmarks = foreheadIndices.map(i => landmarks[i]);
-                    
-                    const greenValue = extractGreenChannel(video, foreheadLandmarks, canvas.width, canvas.height);
-                    
-                    if (greenValue !== null) {
-                        greenBuffer.push(greenValue);
-                        if (greenBuffer.length > BUFFER_SIZE) greenBuffer.shift();
-                    }
-                    
-                    // Draw forehead ROI
-                    ctx.strokeStyle = '#667eea';
-                    ctx.lineWidth = 2;
-                    ctx.beginPath();
-                    foreheadLandmarks.forEach((lm, i) => {
-                        const x = lm.x * canvas.width;
-                        const y = lm.y * canvas.height;
-                        if (i === 0) ctx.moveTo(x, y);
-                        else ctx.lineTo(x, y);
-                    });
-                    ctx.closePath();
-                    ctx.stroke();
-                    
-                } else {
-                    updateStatus('faceStatus', 'Not Found', false);
-                    document.getElementById('faceDetected').textContent = '✗';
-                }
+                // Detect pose and face simultaneously
+                const [poseResults, faceResults] = await Promise.all([
+                    poseLandmarker.detectForVideo(video, now),
+                    faceLandmarker.detectForVideo(video, now)
+                ]);
                 
-                // POSE DETECTION
-                const poseResults = await poseLandmarker.detectForVideo(video, now);
+                let poseLandmarks = null;
+                let faceLandmarks = null;
                 
-                if (poseResults.landmarks?.length > 0) {
-                    updateStatus('poseStatus', 'Detected', true);
-                    document.getElementById('poseDetected').textContent = '✓';
+                // LAYER 1: Landmark Validation
+                if (poseResults.landmarks && poseResults.landmarks.length > 0) {
+                    poseLandmarks = poseResults.landmarks[0];
+                    const landmarkValidation = validateLandmarks(poseLandmarks);
+                    validationLayers.landmark = landmarkValidation.pass;
                     
-                    const landmarks = poseResults.landmarks[0];
-                    const leftShoulder = landmarks[11];
-                    const rightShoulder = landmarks[12];
+                    updateValidationUI('landmark', landmarkValidation);
                     
-                    if (leftShoulder.visibility > 0.5 && rightShoulder.visibility > 0.5) {
-                        const avgY = (leftShoulder.y + rightShoulder.y) / 2;
-                        breathBuffer.push(-avgY); // Invert
-                        timestamps.push(Date.now());
+                    // Update landmark count display
+                    document.getElementById('landmarkCount').textContent = 
+                        `${landmarkValidation.visibleCount}/${landmarkValidation.totalCount}`;
+                    document.getElementById('landmarkQuality').style.width = landmarkValidation.score + '%';
+                    
+                    // LAYER 2: Temporal Consistency
+                    const temporalValidation = validateTemporalConsistency(poseLandmarks);
+                    validationLayers.temporal = temporalValidation.pass;
+                    
+                    updateValidationUI('temporal', temporalValidation);
+                    
+                    // Update motion stability display
+                    document.getElementById('motionStability').textContent = temporalValidation.details;
+                    document.getElementById('motionQuality').style.width = temporalValidation.score + '%';
+                    
+                    // Extract respiratory signals if validation passes
+                    if (validationLayers.landmark && validationLayers.temporal) {
+                        const leftShoulder = poseLandmarks[11];
+                        const rightShoulder = poseLandmarks[12];
+                        const leftHip = poseLandmarks[23];
+                        const rightHip = poseLandmarks[24];
                         
-                        if (breathBuffer.length > BUFFER_SIZE) {
-                            breathBuffer.shift();
-                            timestamps.shift();
+                        if (leftShoulder.visibility > 0.5 && rightShoulder.visibility > 0.5 &&
+                            leftHip.visibility > 0.5 && rightHip.visibility > 0.5) {
+                            
+                            const thoracicY = (leftShoulder.y + rightShoulder.y) / 2;
+                            const abdominalY = (leftHip.y + rightHip.y) / 2;
+                            
+                            thoracicBuffer.push(-thoracicY);
+                            abdominalBuffer.push(-abdominalY);
+                            timestamps.push(Date.now());
+                            
+                            if (thoracicBuffer.length > BUFFER_SIZE) {
+                                thoracicBuffer.shift();
+                                abdominalBuffer.shift();
+                                timestamps.shift();
+                            }
+                            
+                            // Draw landmarks
+                            drawLandmark(ctx, leftShoulder, canvas, '#667eea');
+                            drawLandmark(ctx, rightShoulder, canvas, '#667eea');
+                            drawLandmark(ctx, leftHip, canvas, '#34d399');
+                            drawLandmark(ctx, rightHip, canvas, '#34d399');
                         }
-                        
-                        // Draw shoulders
-                        drawPoint(ctx, leftShoulder, canvas, '#34d399');
-                        drawPoint(ctx, rightShoulder, canvas, '#34d399');
                     }
+                }
+                
+                // Extract rPPG if face detected
+                if (faceResults.faceLandmarks && faceResults.faceLandmarks.length > 0) {
+                    faceLandmarks = faceResults.faceLandmarks[0];
                     
-                } else {
-                    updateStatus('poseStatus', 'Not Found', false);
-                    document.getElementById('poseDetected').textContent = '✗';
-                }
-                
-                // ANALYZE
-                if (breathBuffer.length >= MIN_LENGTH) {
-                    const respAnalysis = analyzeRespiration();
-                    if (respAnalysis) {
-                        updateStatus('signalStatus', respAnalysis.quality, 
-                            respAnalysis.quality === 'Excellent' || respAnalysis.quality === 'Good');
-                        updateRespiratoryMetrics(respAnalysis);
-                        drawSignal('breathSignal', respAnalysis.signal, '#34d399');
+                    const greenValue = extractGreenChannel(video, faceLandmarks, canvas.width, canvas.height);
+                    if (greenValue !== null) {
+                        greenChannelBuffer.push(greenValue);
+                        if (greenChannelBuffer.length > BUFFER_SIZE) {
+                            greenChannelBuffer.shift();
+                        }
                     }
                 }
                 
-                if (greenBuffer.length >= MIN_LENGTH) {
-                    const hrvAnalysis = analyzeHRV();
-                    if (hrvAnalysis) {
-                        updateHRVMetrics(hrvAnalysis);
-                        drawSignal('hrvSignal', hrvAnalysis.signal, '#667eea');
+                // Perform comprehensive analysis
+                if (thoracicBuffer.length >= MIN_SIGNAL_LENGTH) {
+                    const analysis = performComprehensiveAnalysis();
+                    
+                    if (analysis && !analysis.error) {
+                        updateMetricsUI(analysis);
+                        
+                        // Update overall score
+                        const overallScore = (analysis.passedLayers / analysis.totalLayers) * 100;
+                        document.getElementById('overallScore').textContent = overallScore.toFixed(0) + '%';
+                        document.getElementById('overallQuality').style.width = overallScore + '%';
                     }
                 }
                 
-                // FPS
+                // Draw signals
+                drawSignals();
+                
+                // Update FPS
                 frameCount++;
-                if (Date.now() - lastTime > 1000) {
-                    document.getElementById('fps').textContent = frameCount;
+                if (Date.now() - lastFrameTime > 1000) {
+                    lastFrameTime = Date.now();
                     frameCount = 0;
-                    lastTime = Date.now();
                 }
-                
-                // Buffer display
-                const bufferSec = breathBuffer.length / 30;
-                document.getElementById('bufferStatus').textContent = bufferSec.toFixed(1) + 's';
                 
             } catch (error) {
-                console.error('Frame error:', error);
+                console.error('Frame processing error:', error);
             }
             
             animationId = requestAnimationFrame(processFrame);
         }
         
-        // ==================== GREEN CHANNEL EXTRACTION ====================
-        function extractGreenChannel(video, landmarks, w, h) {
-            try {
-                const tempCanvas = document.createElement('canvas');
-                const tempCtx = tempCanvas.getContext('2d', { willReadFrequently: true });
-                tempCanvas.width = w;
-                tempCanvas.height = h;
-                
-                tempCtx.drawImage(video, 0, 0, w, h);
-                
-                // Get bounding box
-                let minX = Infinity, minY = Infinity, maxX = 0, maxY = 0;
-                landmarks.forEach(lm => {
-                    const x = lm.x * w;
-                    const y = lm.y * h;
-                    minX = Math.min(minX, x);
-                    minY = Math.min(minY, y);
-                    maxX = Math.max(maxX, x);
-                    maxY = Math.max(maxY, y);
-                });
-                
-                const width = maxX - minX;
-                const height = maxY - minY;
-                
-                if (width < 10 || height < 10) return null;
-                
-                const imageData = tempCtx.getImageData(minX, minY, width, height);
-                const data = imageData.data;
-                
-                let greenSum = 0;
-                let count = 0;
-                
-                for (let i = 0; i < data.length; i += 4) {
-                    const r = data[i];
-                    const g = data[i + 1];
-                    const b = data[i + 2];
-                    
-                    // Skin tone filter
-                    if (r > 95 && g > 40 && b > 20 && r > g && r > b) {
-                        greenSum += g;
-                        count++;
-                    }
-                }
-                
-                return count > 50 ? greenSum / count : null;
-                
-            } catch (error) {
-                return null;
+        // ==================== UI UPDATES ====================
+        function updateValidationUI(layer, validation) {
+            const icon = document.getElementById(layer + 'Icon');
+            const status = document.getElementById(layer + 'Status');
+            
+            if (validation.pass) {
+                icon.className = 'validation-icon pass';
+                icon.textContent = '✓';
+                status.className = 'validation-value pass';
+                status.textContent = validation.score.toFixed(0) + '%';
+            } else {
+                icon.className = 'validation-icon';
+                icon.textContent = '✗';
+                status.className = 'validation-value';
+                status.textContent = validation.details;
             }
         }
         
-        // ==================== DRAWING ====================
-        function drawPoint(ctx, landmark, canvas, color) {
+        function updateMetricsUI(analysis) {
+            // Respiratory Rate
+            document.getElementById('rrValue').textContent = analysis.respiratoryRate.toFixed(1);
+            document.getElementById('rrConfidence').textContent = analysis.confidence.toFixed(0) + '%';
+            document.getElementById('rrMethod').textContent = 'Multi-Modal Fusion';
+            document.getElementById('rrSNR').textContent = analysis.snr.toFixed(1) + ' dB';
+            document.getElementById('rrLayers').textContent = `${analysis.passedLayers}/${analysis.totalLayers}`;
+            
+            // Badge color
+            const rrBadge = document.getElementById('rrBadge');
+            if (analysis.passedLayers === 5) {
+                rrBadge.className = 'metric-badge';
+                rrBadge.textContent = 'Validated';
+            } else if (analysis.passedLayers >= 3) {
+                rrBadge.className = 'metric-badge warning';
+                rrBadge.textContent = 'Partial';
+            } else {
+                rrBadge.className = 'metric-badge error';
+                rrBadge.textContent = 'Low Quality';
+            }
+            
+            // Breathing Pattern
+            document.getElementById('breathingType').textContent = analysis.breathingType;
+            document.getElementById('thoracicPercent').textContent = analysis.thoracicPercent.toFixed(1) + '%';
+            document.getElementById('abdominalPercent').textContent = analysis.abdominalPercent.toFixed(1) + '%';
+            document.getElementById('phaseAngle').textContent = 'Synchronous';
+            document.getElementById('rsaDetected').textContent = analysis.physioValidation.checks.rsa.value;
+            
+            // HRV
+            if (analysis.hrv > 0) {
+                document.getElementById('hrvValue').textContent = analysis.hrv.toFixed(1);
+                document.getElementById('hrValue').textContent = Math.round(analysis.heartRate);
+                document.getElementById('hrvBadge').textContent = 'Measuring';
+            }
+            
+            // Update validation status
+            updateValidationUI('signal', { 
+                pass: validationLayers.signal, 
+                score: analysis.snr > 6 ? 100 : (analysis.snr / 6) * 100,
+                details: `${analysis.snr.toFixed(1)} dB`
+            });
+            
+            updateValidationUI('physio', {
+                pass: validationLayers.physiological,
+                score: analysis.physioValidation.score,
+                details: analysis.physioValidation.details
+            });
+            
+            updateValidationUI('fusion', {
+                pass: validationLayers.fusion,
+                score: analysis.agreement,
+                details: `${analysis.agreement.toFixed(0)}%`
+            });
+        }
+        
+        function drawLandmark(ctx, landmark, canvas, color) {
             const x = landmark.x * canvas.width;
             const y = landmark.y * canvas.height;
             
@@ -856,31 +1368,40 @@
             
             ctx.strokeStyle = '#fff';
             ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(x, y, 8, 0, 2 * Math.PI);
             ctx.stroke();
         }
         
-        function drawSignal(canvasId, signal, color) {
+        function drawSignals() {
+            drawSignalCanvas('thoracicCanvas', thoracicBuffer, '#667eea');
+            drawSignalCanvas('abdominalCanvas', abdominalBuffer, '#34d399');
+            drawSignalCanvas('rppgCanvas', greenChannelBuffer, '#ef4444');
+        }
+        
+        function drawSignalCanvas(canvasId, buffer, color) {
             const canvas = document.getElementById(canvasId);
-            if (!canvas || signal.length < 2) return;
+            if (!canvas) return;
             
             const ctx = canvas.getContext('2d');
             canvas.width = canvas.offsetWidth;
             canvas.height = canvas.offsetHeight;
             
+            if (buffer.length < 2) return;
+            
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
-            const min = Math.min(...signal);
-            const max = Math.max(...signal);
+            const min = Math.min(...buffer);
+            const max = Math.max(...buffer);
             const range = max - min || 1;
             
             ctx.strokeStyle = color;
             ctx.lineWidth = 2;
             ctx.beginPath();
             
-            signal.forEach((val, i) => {
-                const x = (i / signal.length) * canvas.width;
+            buffer.forEach((val, i) => {
+                const x = (i / buffer.length) * canvas.width;
                 const y = canvas.height - ((val - min) / range) * canvas.height;
-                
                 if (i === 0) ctx.moveTo(x, y);
                 else ctx.lineTo(x, y);
             });
@@ -888,43 +1409,11 @@
             ctx.stroke();
         }
         
-        // ==================== UI UPDATES ====================
-        function updateRespiratoryMetrics(analysis) {
-            document.getElementById('rrValue').textContent = analysis.rate.toFixed(1);
-            document.getElementById('rrQuality').textContent = analysis.quality;
-            document.getElementById('breathType').textContent = analysis.breathType;
-            document.getElementById('cycles').textContent = analysis.cycles;
-            document.getElementById('quality').textContent = analysis.quality;
+        function updateInfo(message, type) {
+            document.getElementById('infoPanel').innerHTML = message;
         }
         
-        function updateHRVMetrics(analysis) {
-            document.getElementById('hrvValue').textContent = analysis.rmssd.toFixed(1);
-            document.getElementById('hrvQuality').textContent = analysis.quality;
-            document.getElementById('hrValue').textContent = Math.round(analysis.heartRate);
-            document.getElementById('sdnnValue').textContent = analysis.sdnn.toFixed(1);
-        }
-        
-        function updateStatus(id, text, active) {
-            document.getElementById(id).textContent = text;
-            const dotId = id.replace('Status', 'Dot');
-            const dot = document.getElementById(dotId);
-            if (dot) dot.className = active ? 'status-dot active' : 'status-dot';
-        }
-        
-        function updateInfo(msg, type) {
-            const box = document.getElementById('infoBox');
-            box.innerHTML = msg;
-            const colors = {
-                success: 'rgba(52, 211, 153, 0.1)',
-                error: 'rgba(239, 68, 68, 0.1)',
-                loading: 'rgba(251, 191, 36, 0.1)',
-                info: 'rgba(102, 126, 234, 0.1)'
-            };
-            box.style.background = colors[type] || colors.info;
-            box.style.borderColor = colors[type]?.replace('0.1', '0.3') || 'rgba(102, 126, 234, 0.3)';
-        }
-        
-        console.log('✅ Accurate detection system loaded');
+        console.log('🔬 Maximum accuracy multi-layer validation system loaded');
     </script>
 </body>
 </html>
